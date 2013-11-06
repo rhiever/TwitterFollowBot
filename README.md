@@ -7,6 +7,14 @@ A hacked-together bot that can automatically follow users and favorite tweets as
 You will need to install the `twitter` library first:
 
     easy_install twitter
+    
+You will also need to create an app account on https://dev.twitter.com/apps
+
+1. Sign in with your Twitter account
+2. Create a new app account
+3. Modify the settings for that app account to allow read & write
+4. Generate a new OAuth token with those permissions
+5. Manually edit this script and put those tokens in the script
 
 ##Usage
 
