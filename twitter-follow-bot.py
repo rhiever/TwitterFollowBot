@@ -35,8 +35,9 @@ def auto_follow(q, count=100, result_type="recent"):
                 following.update(set([tweet['user']['id']]))
                 
                 print "followed " + tweet['user']['screen_name']
+                
         except TwitterHTTPError as e:
-            print "Error: ", e
+            print "error: ", e
         
 def auto_unfollow_nonfollowers():
     following = set(t.friends.ids(screen_name=TWITTER_HANDLE)["ids"])
