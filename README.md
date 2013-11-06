@@ -6,7 +6,7 @@ A hacked-together bot that can automatically follow users and favorite tweets as
 
 You will need to install the `twitter` library first:
 
-  easy_install twitter
+    easy_install twitter
 
 ##Usage
 
@@ -14,27 +14,27 @@ Currently, the bot has three functions:
 
 ###Automatically follow any users that tweet something with a specific phrase
 
-  from twitter-follow-bot import auto_follow
+    from twitter-follow-bot import auto_follow
   
-  auto_follow("#phrase")
+    auto_follow("#phrase")
   
 By default, the bot looks up the 100 most recent tweets. You can change this number with the `count` parameter:
 
-  from twitter-follow-bot import auto_follow
+    from twitter-follow-bot import auto_follow
   
-  auto_follow("#phrase", count=1000)
+    auto_follow("#phrase", count=1000)
 
 ###Automatically favorite any tweets that have a specific phrase
 
-  from twitter-follow-bot import auto_fav
+    from twitter-follow-bot import auto_fav
   
-  auto_fav("#phrase", count=1000)
+    auto_fav("#phrase", count=1000)
 
 ###Automatically unfollow any users that have no followed you back (with exceptions that you can set)
 
-  from twitter-follow-bot import auto_unfollow_nonfollowers
+    from twitter-follow-bot import auto_unfollow_nonfollowers
   
-  auto_unfollow_nonfollowers()
+    auto_unfollow_nonfollowers()
   
 You will need to manually edit the code if you want to add special users that you will keep following even if they don't follow you back.
 
