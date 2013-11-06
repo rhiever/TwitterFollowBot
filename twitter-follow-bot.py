@@ -18,10 +18,11 @@ def auto_fav(q, count=100, result_type="recent"):
     for tweet in result['statuses']:
         try:
             result = t.favorites.create(_id=tweet['id'])
-            print "Favorited: %s" % (result['text'])
+            print "favorited: %s" % (result['text'])
+            
         # when you have already favorited a tweet this error is thrown
         except TwitterHTTPError as e:
-            print "Error: ", e
+            print "error: ", e
 
 def auto_follow(q, count=100, result_type="recent"):
     result = search_tweets(q, count, result_type)
