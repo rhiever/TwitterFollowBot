@@ -2,6 +2,10 @@
 
 A hacked-together bot that can automatically follow users and favorite tweets associated with a specific search query on Twitter.
 
+##Disclaimer
+
+I hold no liability for what you do with this script or what happens to you by using this script. Abusing this script *can* get you banned from Twitter, so make sure to read up on proper usage of the Twitter API.
+
 ##Dependencies
 
 You will need to install the `twitter` library first:
@@ -45,7 +49,3 @@ By default, the bot looks up the 100 most recent tweets. You can change this num
     auto_unfollow_nonfollowers()
   
 You will need to manually edit the code if you want to add special users that you will keep following even if they don't follow you back.
-
-##Disclaimer
-
-I hold no liability for what you do with this script or what happens to you by using this script. Abusing this script *can* get you banned from Twitter, so make sure to read up on proper usage of the Twitter API.
