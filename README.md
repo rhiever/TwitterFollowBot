@@ -24,7 +24,7 @@ You will also need to create an app account on https://dev.twitter.com/apps
 
 Currently, the bot has three functions:
 
-###Automatically follow any users that tweet something with a specific phrase
+####Automatically follow any users that tweet something with a specific phrase
 
     from twitter-follow-bot import auto_follow
   
@@ -36,13 +36,13 @@ By default, the bot looks up the 100 most recent tweets. You can change this num
   
     auto_follow("#phrase", count=1000)
 
-###Automatically favorite any tweets that have a specific phrase
+####Automatically favorite any tweets that have a specific phrase
 
     from twitter-follow-bot import auto_fav
   
     auto_fav("#phrase", count=1000)
 
-###Automatically unfollow any users that have no followed you back (with exceptions that you can set)
+####Automatically unfollow any users that have no followed you back (with exceptions that you can set)
 
     from twitter-follow-bot import auto_unfollow_nonfollowers
   
