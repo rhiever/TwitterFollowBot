@@ -17,6 +17,10 @@ def auto_fav(q, count=100, result_type="recent"):
     
     for tweet in result['statuses']:
         try:
+            # don't favorite your own tweets
+            if tweet['user']['screen_name'] == TWITTER_HANDLE:
+                continue
+            
             result = t.favorites.create(_id=tweet['id'])
             print "favorited: %s" % (result['text'])
             
