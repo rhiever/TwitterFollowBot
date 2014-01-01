@@ -42,6 +42,10 @@ def auto_follow(q, count=100, result_type="recent"):
                 
         except TwitterHTTPError as e:
             print "error: ", e
+            
+            # quit on error unless it's because someone blocked me
+            if "blocked" not in str(e).lower():
+                quit()
         
 def auto_unfollow_nonfollowers():
     following = set(t.friends.ids(screen_name=TWITTER_HANDLE)["ids"])
