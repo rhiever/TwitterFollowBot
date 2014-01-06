@@ -35,6 +35,12 @@ By default, the bot looks up the 100 most recent tweets. You can change this num
     from twitter-follow-bot import auto_follow
   
     auto_follow("#phrase", count=1000)
+    
+####Automatically follow any users that have followed you
+
+    from twitter-follow-bot import auto_follow_followers
+    
+    auto_follow_followers()
 
 ####Automatically favorite any tweets that have a specific phrase
 
