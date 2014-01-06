@@ -28,9 +28,17 @@ TWITTER_HANDLE = ""
 t = Twitter(auth=OAuth(OAUTH_TOKEN, OAUTH_SECRET, CONSUMER_KEY, CONSUMER_SECRET))
 
 def search_tweets(q, count=100, result_type="recent"):
+    """
+        Returns a list of tweets matching a certain phrase (hashtag, word, etc.)
+    """
+    
     return t.search.tweets(q=q, result_type=result_type, count=count)
 
 def auto_fav(q, count=100, result_type="recent"):
+    """
+        Favorites tweets that match a certain phrase (hashtag, word, etc.)
+    """
+    
     result = search_tweets(q, count, result_type)
     
     for tweet in result['statuses']:
@@ -47,6 +55,10 @@ def auto_fav(q, count=100, result_type="recent"):
             print "error: ", e
 
 def auto_follow(q, count=100, result_type="recent"):
+    """
+        Follows anyone who tweets about a specific phrase (hashtag, word, etc.)
+    """
+    
     result = search_tweets(q, count, result_type)
     following = set(t.friends.ids(screen_name=TWITTER_HANDLE)["ids"])
     
@@ -64,8 +76,30 @@ def auto_follow(q, count=100, result_type="recent"):
             # quit on error unless it's because someone blocked me
             if "blocked" not in str(e).lower():
                 quit()
-        
+
+
+def auto_follow_followers():
+    """
+        Follows back everyone who's followed you
+    """
+    
+    following = set(t.friends.ids(screen_name=TWITTER_HANDLE)["ids"])
+    followers = set(t.followers.ids(screen_name=TWITTER_HANDLE)["ids"])
+
+    not_following_back = followers - following
+
+    for user_id in not_following_back:
+	    try:
+            t.friendships.create(user_id=user_id, follow=True)
+        except Exception as e:
+            print e
+            
+
 def auto_unfollow_nonfollowers():
+    """
+        Unfollows everyone who hasn't followed you back
+    """
+    
     following = set(t.friends.ids(screen_name=TWITTER_HANDLE)["ids"])
     followers = set(t.followers.ids(screen_name=TWITTER_HANDLE)["ids"])
     
