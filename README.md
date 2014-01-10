@@ -28,13 +28,15 @@ Currently, the bot has three functions:
 
     from twitter-follow-bot import auto_follow
   
-    auto_follow("#phrase")
+    auto_follow("phrase")
+    
+You can also search based on hashtags.
   
 By default, the bot looks up the 100 most recent tweets. You can change this number with the `count` parameter:
 
     from twitter-follow-bot import auto_follow
   
-    auto_follow("#phrase", count=1000)
+    auto_follow("phrase", count=1000)
     
 ####Automatically follow any users that have followed you
 
@@ -46,9 +48,9 @@ By default, the bot looks up the 100 most recent tweets. You can change this num
 
     from twitter-follow-bot import auto_fav
   
-    auto_fav("#phrase", count=1000)
+    auto_fav("phrase", count=1000)
 
-####Automatically unfollow any users that have no followed you back (with exceptions that you can set)
+####Automatically unfollow any users that have not followed you back (with exceptions that you can set)
 
     from twitter-follow-bot import auto_unfollow_nonfollowers
   
