@@ -1,6 +1,6 @@
 #twitter-follow-bot
 
-A hacked-together bot that can automatically follow users and favorite tweets associated with a specific search query on Twitter.
+A hacked-together Python bot that can automatically follow users and favorite tweets associated with a specific search query on Twitter.
 
 ##Disclaimer
 
@@ -8,7 +8,7 @@ I hold no liability for what you do with this script or what happens to you by u
 
 ##Dependencies
 
-You will need to install the `twitter` library first:
+You will need to install Python's `twitter` library first:
 
     easy_install twitter
     
