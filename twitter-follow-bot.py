@@ -48,7 +48,7 @@ def auto_fav(q, count=100, result_type="recent"):
                 continue
             
             result = t.favorites.create(_id=tweet['id'])
-            print "favorited: %s" % (result['text'])
+            print "favorited: %s" % (result['text']).encode('utf-8')
             
         # when you have already favorited a tweet this error is thrown
         except TwitterHTTPError as e:
