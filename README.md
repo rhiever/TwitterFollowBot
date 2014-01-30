@@ -1,13 +1,14 @@
 #Twitter Follow Bot2
 
-Original project: [https://github.com/rhiever/twitter-follow-bot](https://github.com/rhiever/twitter-follow-bot) by Randal S. Olson (2014)
+Copyright 2014 Sebastian Raschka 
 
 A Python twitter bot that automatically follows users that
 match a specified search query on Twitter and can unfollow
-users that are not following you back.  
-UserIDs of people you are following and unfollowing will be automatically saved  
-in a SQLite database file so you don't follow them twice.
+users that are not following you back.
+Supports smart tracking of users you already followed and 
+unfollowed in a SQLite database.
 
+Original project: [https://github.com/rhiever/twitter-follow-bot](https://github.com/rhiever/twitter-follow-bot) by Randal S. Olson (2014)
 
 ##Disclaimer
 
