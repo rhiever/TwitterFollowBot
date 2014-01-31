@@ -44,8 +44,8 @@ def auto_unfollow(db_file):
     t = Twitter(auth=OAuth(OAUTH_TOKEN, OAUTH_SECRET, CONSUMER_KEY, CONSUMER_SECRET))
     
     # get twitter data
-    following = set(t.friends.ids(screen_name=TWITTER_HANDLE)["ids"])
-    followers = set(t.followers.ids(screen_name=TWITTER_HANDLE)["ids"])
+    following = set(t.friends.ids(screen_name=TWITTER_HANDLE)['ids'])
+    followers = set(t.followers.ids(screen_name=TWITTER_HANDLE)['ids'])
     
     # convert twitter handles into IDs
     users_keep_following = set(t.users.lookup(screen_name=i)[0]['id'] for i in keep_following)
@@ -60,7 +60,7 @@ def auto_unfollow(db_file):
                 check=c.fetchone()
                 if not check:              
                     c.execute('INSERT INTO twitter_db (user_id) VALUES ("%s")' %userid)              
-                print("unfollowed: %s" % userid)
+                print("unfollowed: %s" % t.users.lookup(user_id=userid)[0]['screen_name'])
         except:
             print("Error occurred")
             conn.commit()
