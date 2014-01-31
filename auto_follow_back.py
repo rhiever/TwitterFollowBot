@@ -49,7 +49,7 @@ def auto_follow_followers(db_file):
     for user_id in not_following_back:
         if user_id not in users_dont_follow:
             try:
-                t.friendships.create(user_id=user_id, follow=True)
+                t.friendships.create(user_id=user_id)
             
                 # check if user ID is already in sqlite database
                 c.execute('SELECT user_id FROM twitter_db WHERE user_id=%s' %user_id)
