@@ -47,18 +47,19 @@ def auto_follow_followers(db_file):
     users_dont_follow = set(t.users.lookup(screen_name=i)[0]['id'] for i in dont_follow)
 
     for user_id in not_following_back:
-        try:
-            t.friendships.create(user_id=user_id, follow=True)
+        if user_id not in users_dont_follow:
+            try:
+                t.friendships.create(user_id=user_id, follow=True)
             
-            # check if user ID is already in sqlite database
-            c.execute('SELECT user_id FROM twitter_db WHERE user_id=%s' %user_id)
-            check=c.fetchone()
-            if not check:              
-                c.execute('INSERT INTO twitter_db (user_id) VALUES ("%s")' %user_id)              
-            print("followed: %s" % t.users.lookup(user_id=user_id)[0]['screen_name'])
+                # check if user ID is already in sqlite database
+                c.execute('SELECT user_id FROM twitter_db WHERE user_id=%s' %user_id)
+                check=c.fetchone()
+                if not check:              
+                    c.execute('INSERT INTO twitter_db (user_id) VALUES ("%s")' %user_id)              
+                print("followed: %s" % t.users.lookup(user_id=user_id)[0]['screen_name'])
 
-        except Exception as e:
-            print(e)
+            except Exception as e:
+                print(e)
     return
 
 
