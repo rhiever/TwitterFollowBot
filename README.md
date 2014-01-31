@@ -109,7 +109,7 @@ New people you are unfollowing will be added to the SQLite database so you don't
 ####Automatically follow any user back who has followed you
 
 **1)**
-Open the file `DONT_FOLLOW.txt` to add users who you really don't want to
+Open the file `DONT_FOLLOW.py` to add users who you really don't want to
 follow - even if they are following you.
 
 Example:
