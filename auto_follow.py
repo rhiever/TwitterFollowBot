@@ -79,5 +79,5 @@ def auto_follow_loop(queries, db_file, count=10, result_type="recent"):
 
 if __name__ == "__main__":
                        
-    db_file = './follow_db.sqlite'
-    auto_follow_loop(QUERIES.queries, db_file, count=10, result_type="recent")
+    sqlite_file = './follow_db.sqlite'
+    auto_follow_loop(QUERIES.queries, sqlite_file, count=100, result_type="recent")

@@ -73,5 +73,5 @@ def auto_unfollow(db_file):
 
 if __name__ == "__main__":
                        
-    db_file = './follow_db.sqlite'
-    auto_unfollow(db_file)
+    sqlite_file = './follow_db.sqlite'
+    auto_unfollow(sqlite_file)

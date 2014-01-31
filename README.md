@@ -54,8 +54,7 @@ By default the SQLite database will be created as "follow_db.sqlite" in the scri
 
 
 
-####Automatically follow any users that tweet something with a specific phrase
-
+####Automatically follow all users who recently tweeted about a specific topic
 **1)**  
 Open the file `QUERIES.py` and add the search queries to search for people  
 who you want to follow.  
@@ -88,10 +87,10 @@ New people you are following will be added to the SQLite database so you don't f
 
 
 
-####Automatically unfollow any users that have not followed you back
+####Automatically unfollow all users who have not followed you back
 
 **1)**  
-Open the file `KEEP_FOLLOWING.txt` to add users that you want to keep following to the list.
+Open the file `KEEP_FOLLOWING.txt` to add users who you want to keep following to the list.
 
 Example:
 	
@@ -107,3 +106,22 @@ Via the terminal, execute the script in the script's directory:
 
 New people you are unfollowing will be added to the SQLite database so you don't follow them twice once you unfollowed them.
 
+####Automatically follow any user back who has followed you
+
+**1)**
+Open the file `DONT_FOLLOW.txt` to add users who you really don't want to
+follow - even if they are following you.
+
+Example:
+	
+	dont_follow = [
+        'someimaginaryfantasyname1',
+        'someimaginaryfantasyname2',
+        'someimaginaryfantasyname3',
+    ]
+
+**2)**  
+Via the terminal, execute the script in the script's directory:  
+	`python3 auto_follow_back.py`
+
+New people you are unfollowing will be added to the SQLite database so you don't follow them twice once you unfollowed them.
