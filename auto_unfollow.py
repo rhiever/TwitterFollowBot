@@ -61,7 +61,7 @@ def auto_unfollow(db_file):
                 if not check:              
                     c.execute('INSERT INTO twitter_db (user_id) VALUES ("%s")' %userid)              
                 print("unfollowed: %s" % t.users.lookup(user_id=userid)[0]['screen_name'])
-       except Exception as e:
+        except Exception as e:
             print(e)
             conn.commit()
             conn.close() 
