@@ -6,6 +6,12 @@ A Python bot that can automatically follow users and favorite tweets associated 
 
 I hold no liability for what you do with this script or what happens to you by using this script. Abusing this script *can* get you banned from Twitter, so make sure to read up on proper usage of the Twitter API.
 
+##Would you like me to run this bot for you?
+
+I have a server running this bot 24/7, and can run it for any Twitter account. If you'd like to have a version of this bot running for your account so you can gain more followers, favorite certain Twitter content, etc., contact me: http://www.randalolson.com/contact/
+
+Please be sure to include relevant information about yourself and your Twitter account, including your background, the purpose of your Twitter account, what kind of content you're interested in targeting, etc.
+
 ##Dependencies
 
 You will need to install Python's `twitter` library first:
