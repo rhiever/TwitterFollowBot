@@ -46,10 +46,12 @@ def auto_follow_followers(db_file):
     not_following_back = followers - following
     users_dont_follow = set(t.users.lookup(screen_name=i)[0]['id'] for i in dont_follow)
 
+    cnt += 1
     for user_id in not_following_back:
         if user_id not in users_dont_follow:
             try:
                 t.friendships.create(user_id=user_id)
+                cnt += 1                
             
                 # check if user ID is already in sqlite database
                 c.execute('SELECT user_id FROM twitter_db WHERE user_id=%s' %user_id)
@@ -60,6 +62,7 @@ def auto_follow_followers(db_file):
 
             except Exception as e:
                 print(e)
+    print('Followed back %s users' %cnt)
     return
 
 

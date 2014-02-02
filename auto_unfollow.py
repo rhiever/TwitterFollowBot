@@ -52,23 +52,28 @@ def auto_unfollow(db_file):
     
     # unfollow users
     not_following_back = following - followers
+    cnt = 0
     for userid in not_following_back:
         try:
             if userid not in users_keep_following:
                 t.friendships.destroy(user_id=userid)
+                cnt += 1
                 c.execute('SELECT user_id FROM twitter_db WHERE user_id=%s' %userid)
                 check=c.fetchone()
                 if not check:              
                     c.execute('INSERT INTO twitter_db (user_id) VALUES ("%s")' %userid)              
-                print("unfollowed: %s" % t.users.lookup(user_id=userid)[0]['screen_name'])
+                print('unfollowed: %s' % t.users.lookup(user_id=userid)[0]['screen_name'])
+                print('Unfollowed %s users' %cnt)
         except Exception as e:
             print(e)
             conn.commit()
-            conn.close() 
+            conn.close()
+            print('Unfollowed %s users' %cnt)
             quit()
     
     conn.commit()
-    conn.close()  
+    conn.close()
+    print('Unfollowed %s users' %cnt)  
     return
 
 if __name__ == "__main__":

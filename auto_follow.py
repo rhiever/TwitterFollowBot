@@ -28,6 +28,16 @@ from twitter import Twitter, OAuth, TwitterHTTPError
 import QUERIES
 from AUTH_INFO import *
 
+def print_results(stats_dict):
+    """
+    Prints stats of how many people were followed.
+
+    """
+    for q in stats_dict.keys():
+        print('\nQuery: %s\nFriends in query:%s\nUsers in DB:%s\nNew followers:%s\n'
+                %(stats_dict[q][0], stats_dict[q][2], stats_dict[q][1]))
+    return
+
 
 def auto_follow_loop(queries, db_file, count=10, result_type="recent"):
     """
@@ -44,11 +54,12 @@ def auto_follow_loop(queries, db_file, count=10, result_type="recent"):
     #connect to twitter api
     t = Twitter(auth=OAuth(OAUTH_TOKEN, OAUTH_SECRET, CONSUMER_KEY, CONSUMER_SECRET))
 
+    stats = dict()
     # search for query term, follow matched users and append user id to sqlite db      
     for q in queries:
         result = t.search.tweets(q=q, result_type=result_type, count=count)
         following = set(t.friends.ids(screen_name=TWITTER_HANDLE)['ids'])
-
+        stats[q] = [0,0,0]  # stats for found_friends, new_followers, followers_in_db
         for tweet in result['statuses']:
             try:
                 if tweet['user']['screen_name'] != TWITTER_HANDLE and tweet['user']['id'] not in following:
@@ -62,18 +73,25 @@ def auto_follow_loop(queries, db_file, count=10, result_type="recent"):
                         print('following: %s' % tweet['user']['screen_name'])
                         # add new ID to sqlite database
                         c.execute('INSERT INTO twitter_db (user_id) VALUES ("%s")' %tweet['user']['id'])
+                        stats[q][1] += 1
+                    else:
+                        stats[q][2] += 1
+                else:
+                    stats[q][0] += 1
                  
             except TwitterHTTPError as e:
                 print("error: ", e)
-                conn.commit()
-                conn.close()
     
                 # quit on error unless it's because someone blocked me
                 if "blocked" not in str(e).lower():
+                    conn.commit()
+                    conn.close()
+                    print(print_results(stats))
                     quit()
-    
+
     conn.commit()
     conn.close()
+    print(print_results(stats))
     return
 
 
