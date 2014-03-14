@@ -56,11 +56,11 @@ def auto_fav(q, count=100, result_type="recent"):
                 continue
 
             result = t.favorites.create(_id=tweet["id"])
-            print "favorited: %s" % (result["text"]).encode("utf-8")
+            print("favorited: %s" % (result["text"].encode("utf-8")))
 
-        # when you have already favorited a tweet this error is thrown
+        # when you have already favorited a tweet, this error is thrown
         except TwitterHTTPError as e:
-            print "error: ", e
+            print("error: %s" % (str(e)))
 
 
 def auto_follow(q, count=100, result_type="recent"):
@@ -95,10 +95,10 @@ def auto_follow(q, count=100, result_type="recent"):
                 t.friendships.create(user_id=tweet["user"]["id"], follow=True)
                 following.update(set([tweet["user"]["id"]]))
 
-                print "followed " + tweet["user"]["screen_name"]
+                print("followed %s" % (tweet["user"]["screen_name"]))
 
         except TwitterHTTPError as e:
-            print "error: ", e
+            print("error: %s" % (str(e)))
 
             # quit on error unless it's because someone blocked me
             if "blocked" not in str(e).lower():
@@ -119,7 +119,7 @@ def auto_follow_followers():
         try:
             t.friendships.create(user_id=user_id, follow=True)
         except Exception as e:
-            print e
+            print("error: %s" % (str(e)))
 
 
 def auto_unfollow_nonfollowers():
@@ -158,4 +158,4 @@ def auto_unfollow_nonfollowers():
     for user_id in not_following_back:
         if user_id not in users_keep_following:
             t.friendships.destroy(user_id=user_id)
-            print "unfollowed", user_id
+            print("unfollowed %d" % (user_id))
