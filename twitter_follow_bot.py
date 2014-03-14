@@ -46,7 +46,7 @@ def auto_fav(q, count=100, result_type="recent"):
 
     for tweet in result["statuses"]:
         try:
-            # don"t favorite your own tweets
+            # don't favorite your own tweets
             if tweet["user"]["screen_name"] == TWITTER_HANDLE:
                 continue
 
@@ -77,14 +77,14 @@ def auto_follow(q, count=100, result_type="recent"):
         except TwitterHTTPError as e:
             print "error: ", e
 
-            # quit on error unless it"s because someone blocked me
+            # quit on error unless it's because someone blocked me
             if "blocked" not in str(e).lower():
                 quit()
 
 
 def auto_follow_followers():
     """
-        Follows back everyone who"s followed you
+        Follows back everyone who's followed you
     """
 
     following = set(t.friends.ids(screen_name=TWITTER_HANDLE)["ids"])
@@ -101,13 +101,13 @@ def auto_follow_followers():
 
 def auto_unfollow_nonfollowers():
     """
-        Unfollows everyone who hasn"t followed you back
+        Unfollows everyone who hasn't followed you back
     """
 
     following = set(t.friends.ids(screen_name=TWITTER_HANDLE)["ids"])
     followers = set(t.followers.ids(screen_name=TWITTER_HANDLE)["ids"])
 
-    # put user IDs here that you want to keep following even if they don"t
+    # put user IDs here that you want to keep following even if they don't
     # follow you back
     users_keep_following = set([])
 
