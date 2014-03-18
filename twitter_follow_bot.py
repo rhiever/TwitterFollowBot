@@ -63,6 +63,27 @@ def auto_fav(q, count=100, result_type="recent"):
             print("error: %s" % (str(e)))
 
 
+def auto_rt(q, count=100, result_type="recent"):
+    """
+        Retweets tweets that match a certain phrase (hashtag, word, etc.)
+    """
+
+    result = search_tweets(q, count, result_type)
+
+    for tweet in result["statuses"]:
+        try:
+            # don't retweet your own tweets
+            if tweet["user"]["screen_name"] == TWITTER_HANDLE:
+                continue
+
+            result = t.statuses.retweet(id=tweet["id"])
+            print("retweeted: %s" % (result["text"].encode("utf-8")))
+
+        # when you have already retweeted a tweet, this error is thrown
+        except TwitterHTTPError as e:
+            print("error: %s" % (str(e)))
+
+
 def auto_follow(q, count=100, result_type="recent"):
     """
         Follows anyone who tweets about a specific phrase (hashtag, word, etc.)
