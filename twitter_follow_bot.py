@@ -94,16 +94,17 @@ def auto_follow(q, count=100, result_type="recent"):
 
     # make sure the "already followed" file exists
     if not os.path.isfile(ALREADY_FOLLOWED_FILE):
-    	with open(ALREADY_FOLLOWED_FILE, "w") as out_file:
-    		out_file.write("")
+        with open(ALREADY_FOLLOWED_FILE, "w") as out_file:
+            out_file.write("")
 
-	# read in the list of user IDs that the bot has already followed in the past
+        # read in the list of user IDs that the bot has already followed in the
+        # past
     do_not_follow = set()
     dnf_list = []
     with open(ALREADY_FOLLOWED_FILE) as in_file:
         for line in in_file:
             dnf_list.append(int(line))
-    
+
     do_not_follow.update(set(dnf_list))
     del dnf_list
 
@@ -112,7 +113,7 @@ def auto_follow(q, count=100, result_type="recent"):
             if (tweet["user"]["screen_name"] != TWITTER_HANDLE and
                     tweet["user"]["id"] not in following and
                     tweet["user"]["id"] not in do_not_follow):
-                
+
                 t.friendships.create(user_id=tweet["user"]["id"], follow=True)
                 following.update(set([tweet["user"]["id"]]))
 
@@ -156,26 +157,26 @@ def auto_unfollow_nonfollowers():
     users_keep_following = set([])
 
     not_following_back = following - followers
-    
+
     # make sure the "already followed" file exists
     if not os.path.isfile(ALREADY_FOLLOWED_FILE):
-    	with open(ALREADY_FOLLOWED_FILE, "w") as out_file:
-    		out_file.write("")
-    
+        with open(ALREADY_FOLLOWED_FILE, "w") as out_file:
+            out_file.write("")
+
     # update the "already followed" file with users who didn't follow back
     already_followed = set(not_following_back)
     af_list = []
     with open(ALREADY_FOLLOWED_FILE) as in_file:
         for line in in_file:
             af_list.append(int(line))
-    
+
     already_followed.update(set(af_list))
     del af_list
 
     with open(ALREADY_FOLLOWED_FILE, "w") as out_file:
         for val in already_followed:
             out_file.write(str(val) + "\n")
-    
+
     for user_id in not_following_back:
         if user_id not in users_keep_following:
             t.friendships.destroy(user_id=user_id)
