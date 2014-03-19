@@ -14,7 +14,7 @@ Please be sure to include relevant information about yourself and your Twitter a
 
 ##Dependencies
 
-You will need to install Python's `twitter` library first:
+You will need to install Python's [python-twitter](https://code.google.com/p/python-twitter/) library first:
 
     easy_install twitter
     
@@ -28,7 +28,7 @@ You will also need to create an app account on https://dev.twitter.com/apps
 
 ##Usage
 
-Currently, the bot has three functions:
+This bot has several functions for programmatically interacting with Twitter:
 
 ####Automatically follow any users that tweet something with a specific phrase
 
@@ -55,6 +55,12 @@ By default, the bot looks up the 100 most recent tweets. You can change this num
     from twitter_follow_bot import auto_fav
   
     auto_fav("phrase", count=1000)
+    
+####Automatically retweet any tweets that have a specific phrase
+
+    from twitter_follow_bot import auto_rt
+  
+    auto_rt("phrase", count=1000)
 
 ####Automatically unfollow any users that have not followed you back (with exceptions that you can set)
 
