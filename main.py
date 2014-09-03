@@ -5,6 +5,8 @@ import datetime
 import codecs
 import sys
 
+from os.path import dirname, join as pjoin
+
 from twitter_follow_bot import auto_follow
 
 
@@ -28,7 +30,7 @@ def run_job(job):
 
 
 def main():
-    with open('schedule.csv', 'r') as f:
+    with open(pjoin(dirname(__file__), 'schedule.csv'), 'r') as f:
         for row in csv.DictReader(f):
             if job_valid_now(row):
                 run_job(row)
