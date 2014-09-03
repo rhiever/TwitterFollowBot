@@ -22,19 +22,18 @@ from __future__ import unicode_literals
 from twitter import Twitter, OAuth, TwitterHTTPError
 import os
 
-# put your tokens, keys, secrets, and Twitter handle in the following variables
-OAUTH_TOKEN = ""
-OAUTH_SECRET = ""
-CONSUMER_KEY = ""
-CONSUMER_SECRET = ""
-TWITTER_HANDLE = ""
+API_KEY = os.environ['API_KEY']
+API_SECRET = os.environ['API_SECRET']
+ACCESS_TOKEN = os.environ['ACCESS_TOKEN']
+ACCESS_TOKEN_SECRET = os.environ['ACCESS_TOKEN_SECRET']
+TWITTER_HANDLE = os.environ['TWITTER_HANDLE']
 
 # put the full path and file name of the file you want to store your "already
 # followed" list in
 ALREADY_FOLLOWED_FILE = "already-followed.csv"
 
-t = Twitter(auth=OAuth(OAUTH_TOKEN, OAUTH_SECRET,
-            CONSUMER_KEY, CONSUMER_SECRET))
+t = Twitter(auth=OAuth(ACCESS_TOKEN, ACCESS_TOKEN_SECRET,
+            API_KEY, API_SECRET))
 
 
 def search_tweets(q, count=100, result_type="recent"):

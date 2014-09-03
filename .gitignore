@@ -1,5 +1,6 @@
 *.pyc
 .*.swp
 /schedule.csv
+/credentials.sh
 /log/*
 /venv
