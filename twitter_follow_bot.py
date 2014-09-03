@@ -17,6 +17,8 @@ You should have received a copy of the GNU General Public License along with
 the Twitter Follow Bot library. If not, see http://www.gnu.org/licenses/.
 """
 
+from __future__ import unicode_literals
+
 from twitter import Twitter, OAuth, TwitterHTTPError
 import os
 
@@ -91,41 +93,30 @@ def auto_follow(q, count=100, result_type="recent"):
     """
 
     result = search_tweets(q, count, result_type)
-    following = set(t.friends.ids(screen_name=TWITTER_HANDLE)["ids"])
 
-    # make sure the "already followed" file exists
-    if not os.path.isfile(ALREADY_FOLLOWED_FILE):
-        with open(ALREADY_FOLLOWED_FILE, "w") as out_file:
-            out_file.write("")
-
-        # read in the list of user IDs that the bot has already followed in the
-        # past
-    do_not_follow = set()
-    dnf_list = []
-    with open(ALREADY_FOLLOWED_FILE) as in_file:
-        for line in in_file:
-            dnf_list.append(int(line))
-
-    do_not_follow.update(set(dnf_list))
-    del dnf_list
+    to_follow = set()
 
     for tweet in result["statuses"]:
+        if tweet["user"]["screen_name"] == TWITTER_HANDLE:
+            continue
+        print('@{}:\n{}\n'.format(
+            tweet['user']['screen_name'],
+            tweet['text']))
+        to_follow.add(tweet['user']['id'])
+
+    already_following = set(t.friends.ids(screen_name=TWITTER_HANDLE)["ids"])
+
+    to_follow -= already_following
+    print("Following {} users".format(len(to_follow)))
+    for twitter_id in to_follow:
+        print(twitter_id)
         try:
-            if (tweet["user"]["screen_name"] != TWITTER_HANDLE and
-                    tweet["user"]["id"] not in following and
-                    tweet["user"]["id"] not in do_not_follow):
-
-                t.friendships.create(user_id=tweet["user"]["id"], follow=True)
-                following.update(set([tweet["user"]["id"]]))
-
-                print("followed %s" % (tweet["user"]["screen_name"]))
-
+            t.friendships.create(user_id=twitter_id, follow=True)
         except TwitterHTTPError as e:
-            print("error: %s" % (str(e)))
-
-            # quit on error unless it's because someone blocked me
-            if "blocked" not in str(e).lower():
-                quit()
+            if 'blocked' not in str(e).lower():  # ignore block errors
+                print(repr(e))
+            else:
+                raise
 
 
 def auto_follow_followers():
