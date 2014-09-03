@@ -5,15 +5,16 @@ This file is part of the Twitter Follow Bot library.
 
 The Twitter Follow Bot library is free software: you can redistribute it and/or
 modify it under the terms of the GNU General Public License as published by the
-Free Software Foundation, either version 3 of the License, or (at your option) any
-later version.
+Free Software Foundation, either version 3 of the License, or (at your option)
+any later version.
 
-The Twitter Follow Bot library is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
-FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+The Twitter Follow Bot library is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public
+License for more details.
 
-You should have received a copy of the GNU General Public License along with the Twitter
-Follow Bot library. If not, see http://www.gnu.org/licenses/.
+You should have received a copy of the GNU General Public License along with
+the Twitter Follow Bot library. If not, see http://www.gnu.org/licenses/.
 """
 
 from twitter import Twitter, OAuth, TwitterHTTPError
@@ -26,8 +27,8 @@ CONSUMER_KEY = ""
 CONSUMER_SECRET = ""
 TWITTER_HANDLE = ""
 
-# put the full path and file name of the file you want to store your "already followed"
-# list in
+# put the full path and file name of the file you want to store your "already
+# followed" list in
 ALREADY_FOLLOWED_FILE = "already-followed.csv"
 
 t = Twitter(auth=OAuth(OAUTH_TOKEN, OAUTH_SECRET,
@@ -36,7 +37,7 @@ t = Twitter(auth=OAuth(OAUTH_TOKEN, OAUTH_SECRET,
 
 def search_tweets(q, count=100, result_type="recent"):
     """
-        Returns a list of tweets matching a certain phrase (hashtag, word, etc.)
+    Returns a list of tweets matching a certain phrase (hashtag, word, etc.)
     """
 
     return t.search.tweets(q=q, result_type=result_type, count=count)
