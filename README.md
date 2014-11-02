@@ -72,7 +72,7 @@ You will need to manually edit the code if you want to add special users that yo
 
 You will need to manually edit the code if you want to add special users that you will not mute.
 
-####Automatically unmute everyone you have muted
+####Automatically unmute everyone you have muted (with exceptions that you can set)
 
     from twitter_follow_bot import auto_unmute
     
