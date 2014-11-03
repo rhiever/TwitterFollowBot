@@ -183,3 +183,38 @@ def auto_unfollow_nonfollowers():
         if user_id not in users_keep_following:
             t.friendships.destroy(user_id=user_id)
             print("unfollowed %d" % (user_id))
+
+
+def auto_mute_following():
+    """
+        Mutes everyone that you are following
+    """
+    following = set(t.friends.ids(screen_name=TWITTER_HANDLE)["ids"])
+    muted = set(t.mutes.users.ids(screen_name=TWITTER_HANDLE)["ids"])
+
+    not_muted = following - muted
+
+    # put user IDs of people you do not want to mute here
+    users_keep_unmuted = set([])
+            
+    # mute all        
+    for user_id in not_muted:
+        if user_id not in users_keep_unmuted:
+            t.mutes.users.create(user_id=user_id)
+            print("muted %d" % (user_id))
+
+
+def auto_unmute():
+    """
+        Unmutes everyone that you have muted
+    """
+    muted = set(t.mutes.users.ids(screen_name=TWITTER_HANDLE)["ids"])
+
+    # put user IDs of people you want to remain muted here
+    users_keep_muted = set([])
+            
+    # mute all        
+    for user_id in muted:
+        if user_id not in users_keep_muted:
+            t.mutes.users.destroy(user_id=user_id)
+            print("unmuted %d" % (user_id))

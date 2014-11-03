@@ -63,3 +63,19 @@ By default, the bot looks up the 100 most recent tweets. You can change this num
     auto_unfollow_nonfollowers()
   
 You will need to manually edit the code if you want to add special users that you will keep following even if they don't follow you back.
+
+####Automatically mute all users that you have followed (with exceptions that you can set)
+
+    from twitter_follow_bot import auto_mute_following
+    
+    auto_mute_following()
+
+You will need to manually edit the code if you want to add special users that you will not mute.
+
+####Automatically unmute everyone you have muted (with exceptions that you can set)
+
+    from twitter_follow_bot import auto_unmute
+    
+    auto_unmute()
+    
+You will need to manually edit the code if you want to add special users that will remain muted. 
