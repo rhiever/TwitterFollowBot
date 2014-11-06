@@ -58,6 +58,10 @@ By default, the bot looks up the 100 most recent tweets. You can change this num
 
 ####Automatically unfollow any users that have not followed you back (with exceptions that you can set)
 
+**Warning: If you have over 5,000 followers, the auto unfollow functionality may not work properly for you.**
+
+I advise against using auto unfollow if you have more than 5,000 followers at this point. See [this issue](https://github.com/rhiever/twitter-follow-bot/issues/14) for more details.
+
     from twitter_follow_bot import auto_unfollow_nonfollowers
   
     auto_unfollow_nonfollowers()
