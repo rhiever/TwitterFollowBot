@@ -8,7 +8,7 @@ I hold no liability for what you do with this script or what happens to you by u
 
 ##Dependencies
 
-You will need to install Python's [python-twitter](https://code.google.com/p/python-twitter/) library first:
+You will need to install Python's [python-twitter](https://github.com/sixohsix/twitter/) library first:
 
     easy_install twitter
     
@@ -37,12 +37,22 @@ By default, the bot looks up the 100 most recent tweets. You can change this num
     from twitter_follow_bot import auto_follow
   
     auto_follow("phrase", count=1000)
+
+####Automatically follow any users that follow a user
+    
+    from twitter_follow_bot import auto_follow_followers_for_user
     
 ####Automatically follow any users that have followed you
 
     from twitter_follow_bot import auto_follow_followers
     
-    auto_follow_followers()
+    auto_follow_followers_for_user("jack")
+
+    By default, the bot looks up the 100 most recent tweets. You can change this number with the `count` parameter:
+
+        from twitter_follow_bot import auto_follow_followers_for_user
+      
+        auto_follow_followers_for_user("jack", count=1000)
 
 ####Automatically favorite any tweets that have a specific phrase
 
