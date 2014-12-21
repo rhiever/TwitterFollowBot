@@ -86,13 +86,10 @@ def auto_rt(q, count=100, result_type="recent"):
             print("error: %s" % (str(e)))
 
 
-def auto_follow(q, count=100, result_type="recent"):
+def get_do_not_follow_list():
     """
-        Follows anyone who tweets about a specific phrase (hashtag, word, etc.)
+        Returns list of users the bot has already followed.
     """
-
-    result = search_tweets(q, count, result_type)
-    following = set(t.friends.ids(screen_name=TWITTER_HANDLE)["ids"])
 
     # make sure the "already followed" file exists
     if not os.path.isfile(ALREADY_FOLLOWED_FILE):
@@ -109,6 +106,18 @@ def auto_follow(q, count=100, result_type="recent"):
 
     do_not_follow.update(set(dnf_list))
     del dnf_list
+
+    return do_not_follow
+
+
+def auto_follow(q, count=100, result_type="recent"):
+    """
+        Follows anyone who tweets about a specific phrase (hashtag, word, etc.)
+    """
+
+    result = search_tweets(q, count, result_type)
+    following = set(t.friends.ids(screen_name=TWITTER_HANDLE)["ids"])
+    do_not_follow = get_do_not_follow_list()
 
     for tweet in result["statuses"]:
         try:
@@ -128,6 +137,25 @@ def auto_follow(q, count=100, result_type="recent"):
             if "blocked" not in str(e).lower():
                 quit()
 
+
+def auto_follow_followers_for_user(user_screen_name, count=100):
+    """
+        Follows the followers of a user
+    """
+    following = set(t.friends.ids(screen_name=TWITTER_HANDLE)["ids"])
+    followers_for_user = set(t.followers.ids(screen_name=user_screen_name)["ids"][:count]);
+    do_not_follow = get_do_not_follow_list()
+    
+    for user_id in followers_for_user:
+        try:
+            if (user_id not in following and 
+                user_id not in do_not_follow):
+
+                t.friendships.create(user_id=user_id, follow=True)
+                print("followed %s" % user_id)
+
+        except TwitterHTTPError as e:
+            print("error: %s" % (str(e)))
 
 def auto_follow_followers():
     """
