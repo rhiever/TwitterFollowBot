@@ -125,7 +125,7 @@ def auto_follow(q, count=100, result_type="recent"):
                     tweet["user"]["id"] not in following and
                     tweet["user"]["id"] not in do_not_follow):
 
-                t.friendships.create(user_id=tweet["user"]["id"], follow=True)
+                t.friendships.create(user_id=tweet["user"]["id"], follow=False)
                 following.update(set([tweet["user"]["id"]]))
 
                 print("followed %s" % (tweet["user"]["screen_name"]))
@@ -151,7 +151,7 @@ def auto_follow_followers_for_user(user_screen_name, count=100):
             if (user_id not in following and 
                 user_id not in do_not_follow):
 
-                t.friendships.create(user_id=user_id, follow=True)
+                t.friendships.create(user_id=user_id, follow=False)
                 print("followed %s" % user_id)
 
         except TwitterHTTPError as e:
@@ -169,7 +169,7 @@ def auto_follow_followers():
 
     for user_id in not_following_back:
         try:
-            t.friendships.create(user_id=user_id, follow=True)
+            t.friendships.create(user_id=user_id, follow=False)
         except Exception as e:
             print("error: %s" % (str(e)))
 
