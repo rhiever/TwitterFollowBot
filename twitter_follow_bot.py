@@ -42,6 +42,14 @@ def search_tweets(q, count=100, result_type="recent"):
     """
 
     return t.search.tweets(q=q, result_type=result_type, count=count)
+    
+
+def search_tweets_geo(q, count=100, result_type="recent", geocode=""):
+    """
+        Returns a list of tweets matching a certain phrase (hashtag, word, etc.) with geocode
+    """
+
+    return t.search.tweets(q=q, result_type=result_type, count=count, geocode=geocode)
 
 
 def auto_fav(q, count=100, result_type="recent"):
@@ -116,6 +124,35 @@ def auto_follow(q, count=100, result_type="recent"):
     """
 
     result = search_tweets(q, count, result_type)
+    following = set(t.friends.ids(screen_name=TWITTER_HANDLE)["ids"])
+    do_not_follow = get_do_not_follow_list()
+
+    for tweet in result["statuses"]:
+        try:
+            if (tweet["user"]["screen_name"] != TWITTER_HANDLE and
+                    tweet["user"]["id"] not in following and
+                    tweet["user"]["id"] not in do_not_follow):
+
+                t.friendships.create(user_id=tweet["user"]["id"], follow=False)
+                following.update(set([tweet["user"]["id"]]))
+
+                print("followed %s" % (tweet["user"]["screen_name"]))
+
+        except TwitterHTTPError as e:
+            print("error: %s" % (str(e)))
+
+            # quit on error unless it's because someone blocked me
+            if "blocked" not in str(e).lower():
+                quit()
+
+
+def auto_follow_geo(geocode="", count=100, q="", result_type="recent"):
+    """
+        Follows anyone who tweets from a specified geographic location
+        Use geocode latitude,longitude,radius eg. -27.4678802490,153.0470428467,20km
+    """
+
+    result = search_tweets_geo(q, count, result_type, geocode)
     following = set(t.friends.ids(screen_name=TWITTER_HANDLE)["ids"])
     do_not_follow = get_do_not_follow_list()
 
