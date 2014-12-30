@@ -42,6 +42,12 @@ By default, the bot looks up the 100 most recent tweets. You can change this num
     
     from twitter_follow_bot import auto_follow_followers_for_user
     
+####Automatically follow any users that tweet from a specific geolocation
+    
+    from twitter_follow_bot import auto_follow_geo
+    
+    auto_follow_geo("geocode") eg. "-27.4678802490,153.0470428467,20km" latitude,longitude,radis
+    
 ####Automatically follow any users that have followed you
 
     from twitter_follow_bot import auto_follow_followers
