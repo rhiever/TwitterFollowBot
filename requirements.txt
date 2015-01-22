@@ -1,2 +1,2 @@
-twitter==1.14.3
-pytz==2014.7
+twitter==1.15.0
+pytz==2014.10
