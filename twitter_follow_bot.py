@@ -22,11 +22,11 @@ from twitter import Twitter, OAuth, TwitterHTTPError
 import os
 
 # put your tokens, keys, secrets, and Twitter handle in the following variables
-OAUTH_TOKEN = ""
-OAUTH_SECRET = ""
-CONSUMER_KEY = ""
-CONSUMER_SECRET = ""
-TWITTER_HANDLE = ""
+OAUTH_TOKEN = "2754806952-yBAbRDdkxvYKpImjRnsm7MEwCsNszjpbel4ZDTY"
+OAUTH_SECRET = "FFfebP9R2T43N4GUZhQntlzECCUulJoCDLZSaxPRbMp35"
+CONSUMER_KEY = "nm18SuFGYtyZUJEpfoYjWApKe"
+CONSUMER_SECRET = "brLlmlqjMt3rVCYH96oSuc4W9THrR8ndadpxEe1430PsFiDGjb"
+TWITTER_HANDLE = "simonuvarov"
 
 # put the full path and file name of the file you want to store your "already followed"
 # list in
@@ -213,6 +213,10 @@ def auto_unfollow_nonfollowers():
             print("unfollowed %d" % (user_id))
 
 
+def mute_user_by_id(user_id):
+    t.mutes.users.create(user_id=user_id)
+
+
 def auto_mute_following():
     """
         Mutes everyone that you are following
@@ -228,8 +232,8 @@ def auto_mute_following():
     # mute all        
     for user_id in not_muted:
         if user_id not in users_keep_unmuted:
-            t.mutes.users.create(user_id=user_id)
-            print("muted %d" % (user_id))
+            mute_user_by_id(user_id)
+            print("muted %d" % user_id)
 
 
 def auto_unmute():
@@ -246,3 +250,8 @@ def auto_unmute():
         if user_id not in users_keep_muted:
             t.mutes.users.destroy(user_id=user_id)
             print("unmuted %d" % (user_id))
+
+
+if __name__ == "__main__":
+    #auto_follow("tv shows", 100)
+    auto_mute_following()
