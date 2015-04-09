@@ -20,6 +20,7 @@ Follow Bot library. If not, see http://www.gnu.org/licenses/.
 
 from twitter import Twitter, OAuth, TwitterHTTPError
 import os
+import pickle
 
 # put your tokens, keys, secrets, and Twitter handle in the following variables
 OAUTH_TOKEN = "2754806952-yBAbRDdkxvYKpImjRnsm7MEwCsNszjpbel4ZDTY"
@@ -86,28 +87,46 @@ def auto_rt(q, count=100, result_type="recent"):
             print("error: %s" % (str(e)))
 
 
-def get_do_not_follow_list():
+def load_already_followed_list():
     """
         Returns list of users the bot has already followed.
     """
+    already_followed = set()
 
     # make sure the "already followed" file exists
     if not os.path.isfile(ALREADY_FOLLOWED_FILE):
         with open(ALREADY_FOLLOWED_FILE, "w") as out_file:
             out_file.write("")
+            out_file.close()
 
-        # read in the list of user IDs that the bot has already followed in the
-        # past
-    do_not_follow = set()
-    dnf_list = []
+    # read in the list of user IDs that the bot has already followed in the
+    # past
     with open(ALREADY_FOLLOWED_FILE) as in_file:
-        for line in in_file:
-            dnf_list.append(int(line))
+        already_followed = pickle.load(in_file)
+        in_file.close()
 
-    do_not_follow.update(set(dnf_list))
-    del dnf_list
+    return already_followed
 
-    return do_not_follow
+
+def save_already_followed_list(af_list):
+    """
+        Returns list of users the bot has already followed.
+    """
+    already_followed = set(af_list)
+
+    # make sure the "already followed" file exists
+    if not os.path.isfile(ALREADY_FOLLOWED_FILE):
+        with open(ALREADY_FOLLOWED_FILE, "w") as out_file:
+            out_file.write("")
+            pickle.dump(already_followed, out_file)
+            out_file.close()
+
+def follow_user_by_id(user_id):
+    """
+        Follows user by id
+    """
+    t.friendships.create(user_id=user_id, follow=False)
+    print("followed %s" % user_id)
 
 
 def auto_follow(q, count=100, result_type="recent"):
@@ -117,7 +136,7 @@ def auto_follow(q, count=100, result_type="recent"):
 
     result = search_tweets(q, count, result_type)
     following = set(t.friends.ids(screen_name=TWITTER_HANDLE)["ids"])
-    do_not_follow = get_do_not_follow_list()
+    do_not_follow = load_already_followed_list()
 
     for tweet in result["statuses"]:
         try:
@@ -125,10 +144,9 @@ def auto_follow(q, count=100, result_type="recent"):
                     tweet["user"]["id"] not in following and
                     tweet["user"]["id"] not in do_not_follow):
 
-                t.friendships.create(user_id=tweet["user"]["id"], follow=False)
+                follow_user_by_id(tweet["user"]["id"])
                 following.update(set([tweet["user"]["id"]]))
-
-                print("followed %s" % (tweet["user"]["screen_name"]))
+                mute_user_by_id(tweet["user"]["id"])
 
         except TwitterHTTPError as e:
             print("error: %s" % (str(e)))
@@ -138,21 +156,21 @@ def auto_follow(q, count=100, result_type="recent"):
                 quit()
 
 
+
 def auto_follow_followers_for_user(user_screen_name, count=100):
     """
         Follows the followers of a user
     """
     following = set(t.friends.ids(screen_name=TWITTER_HANDLE)["ids"])
     followers_for_user = set(t.followers.ids(screen_name=user_screen_name)["ids"][:count]);
-    do_not_follow = get_do_not_follow_list()
+    do_not_follow = load_already_followed_list()
     
     for user_id in followers_for_user:
         try:
             if (user_id not in following and 
                 user_id not in do_not_follow):
 
-                t.friendships.create(user_id=user_id, follow=False)
-                print("followed %s" % user_id)
+                follow_user_by_id(user_id)
 
         except TwitterHTTPError as e:
             print("error: %s" % (str(e)))
@@ -169,7 +187,7 @@ def auto_follow_followers():
 
     for user_id in not_following_back:
         try:
-            t.friendships.create(user_id=user_id, follow=False)
+            follow_user_by_id(user_id)
         except Exception as e:
             print("error: %s" % (str(e)))
 
@@ -214,7 +232,11 @@ def auto_unfollow_nonfollowers():
 
 
 def mute_user_by_id(user_id):
+    """
+        Mutes user by id
+    """
     t.mutes.users.create(user_id=user_id)
+    print("muted %d" % user_id)
 
 
 def auto_mute_following():
@@ -253,5 +275,7 @@ def auto_unmute():
 
 
 if __name__ == "__main__":
-    #auto_follow("tv shows", 100)
-    auto_mute_following()
+    a = [1,2,3,4,5]
+    save_already_followed_list(a)
+    b = load_already_followed_list()
+    print b
