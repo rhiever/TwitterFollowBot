@@ -35,8 +35,8 @@ ALREADY_FOLLOWED_FILE = "already-followed.txt"
 
 # put the full paths and file names of the files you want to keep track of
 # your follows in
-FOLLOWS_FILE = "following.txt"
 FOLLOWERS_FILE = "followers.txt"
+FOLLOWS_FILE = "following.txt"
 
 # make sure all of the sync files exist
 for sync_file in [ALREADY_FOLLOWED_FILE, FOLLOWS_FILE, FOLLOWERS_FILE]:
@@ -82,7 +82,7 @@ def sync_follows():
     following = set(following_status["ids"])
     next_cursor = following_status["next_cursor"]
 
-    with open(ALREADY_FOLLOWED_FILE, "wb") as out_file:
+    with open(FOLLOWS_FILE, "wb") as out_file:
         for follow in following:
             out_file.write("%s\n" % (follow))
 
@@ -92,7 +92,7 @@ def sync_follows():
         following = set(following_status["ids"])
         next_cursor = following_status["next_cursor"]
 
-        with open(ALREADY_FOLLOWED_FILE, "ab") as out_file:
+        with open(FOLLOWS_FILE, "ab") as out_file:
             for follow in following:
                 out_file.write("%s\n" % (follow))
 
