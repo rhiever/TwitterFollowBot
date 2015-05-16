@@ -143,7 +143,7 @@ By default, the bot looks up the 100 most recent tweets. You can change this num
     my_bot = TwitterBot()
     my_bot.auto_rt("phrase", count=1000)
 
-####Automatically unfollow any users that have not followed you back (with exceptions that you can set)
+####Automatically unfollow any users that have not followed you back
 
     from TwitterBot import TwitterBot
     
@@ -152,7 +152,7 @@ By default, the bot looks up the 100 most recent tweets. You can change this num
   
 You will need to manually edit the code if you want to add special users that you will keep following even if they don't follow you back.
 
-####Automatically mute all users that you have followed (with exceptions that you can set)
+####Automatically mute all users that you have followed
 
     from TwitterBot import TwitterBot
     
@@ -161,7 +161,7 @@ You will need to manually edit the code if you want to add special users that yo
 
 You will need to manually edit the code if you want to add special users that you will not mute.
 
-####Automatically unmute everyone you have muted (with exceptions that you can set)
+####Automatically unmute everyone you have muted
 
     from TwitterBot import TwitterBot
     
