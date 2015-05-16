@@ -222,12 +222,13 @@ class TwitterBot:
 
             # when you have already favorited a tweet, this error is thrown
             except TwitterHTTPError as e:
+                # quit on rate limit errors                                                                                                                  
+                if "rate limit" in str(e).lower():
+                    print("You have been rate limited. Wait a while before running the bot again.")
+                    return
+
                 if "you have already favorited this status" not in str(e).lower():
                     print("error: %s" % (str(e)))
-                    
-                # quit on rate limit errors                                                                                                                  
-                if "rate limit"    in str(e).lower():
-                    return
 
 
     def auto_rt(self, q, count=100, result_type="recent"):
@@ -248,11 +249,12 @@ class TwitterBot:
 
             # when you have already retweeted a tweet, this error is thrown
             except TwitterHTTPError as e:
-                print("error: %s" % (str(e)))
-                
                 # quit on rate limit errors                                                                                                                  
-                if "rate limit"    in str(e).lower():
+                if "rate limit" in str(e).lower():
+                    print("You have been rate limited. Wait a while before running the bot again.")
                     return
+
+                print("error: %s" % (str(e)))
 
 
     def auto_follow(self, q, count=100, result_type="recent"):
@@ -276,13 +278,15 @@ class TwitterBot:
                     print("followed %s" % (tweet["user"]["screen_name"]))
 
             except TwitterHTTPError as e:
+                # quit on rate limit errors                                                                                                                  
+                if "unable to follow more people at this time" in str(e).lower():
+                    print("You are unable to follow more people at this time. "
+                          "Wait a while before running the bot again or gain more followers.")
+                    return
+
                 # don't print "already requested to follow" errors - they're frequent
                 if "already requested to follow" not in str(e).lower():
                     print("error: %s" % (str(e)))
-
-                # quit on rate limit errors                                                                                                                  
-                if "unable to follow more people at this time" in str(e).lower():
-                    return
 
 
     def auto_follow_followers(self):
@@ -299,13 +303,15 @@ class TwitterBot:
             try:
                 self.TWITTER_CONNECTION.friendships.create(user_id=user_id, follow=False)
             except Exception as e:
+                # quit on rate limit errors                                                                                                                  
+                if "unable to follow more people at this time" in str(e).lower():
+                    print("You are unable to follow more people at this time. "
+                          "Wait a while before running the bot again or gain more followers.")
+                    return
+
                 # don't print "already requested to follow" errors - they're frequent
                 if "already requested to follow" not in str(e).lower():
                     print("error: %s" % (str(e)))
-                
-                # quit on rate limit errors                                                                                                                  
-                if "unable to follow more people at this time" in str(e).lower():
-                    return
 
 
     def auto_follow_followers_of_user(self, user_screen_name, count=100):
@@ -326,13 +332,15 @@ class TwitterBot:
                     print("followed %s" % user_id)
 
             except TwitterHTTPError as e:
+                # quit on rate limit errors                                                                                                                  
+                if "unable to follow more people at this time" in str(e).lower():
+                    print("You are unable to follow more people at this time. "
+                          "Wait a while before running the bot again or gain more followers.")
+                    return
+
                 # don't print "already requested to follow" errors - they're frequent
                 if "already requested to follow" not in str(e).lower():
                     print("error: %s" % (str(e)))
-                
-                # quit on rate limit errors                                                                                                                  
-                if "unable to follow more people at this time" in str(e).lower():
-                    return
 
 
     def auto_unfollow_nonfollowers(self):
