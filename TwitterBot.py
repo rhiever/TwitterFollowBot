@@ -52,7 +52,14 @@ class TwitterBot:
                 line = line.split(":")
                 parameter = line[0].strip()
                 value = line[1].strip()
-                self.BOT_CONFIG[parameter] = value
+                
+                if parameter in ["USERS_KEEP_FOLLOWING", "USERS_KEEP_UNMUTED", "USERS_KEEP_MUTED"]:
+                    if value != "":
+                        self.BOT_CONFIG[parameter] = set([int(x) for x in value.split(",")])
+                    else:
+                        self.BOT_CONFIG[parameter] = set()
+                else:
+                    self.BOT_CONFIG[parameter] = value
 
         # make sure that the config file specifies all required parameters
         required_parameters = ["OAUTH_TOKEN", "OAUTH_SECRET", "CONSUMER_KEY",
@@ -274,7 +281,7 @@ class TwitterBot:
                     print("error: %s" % (str(e)))
 
                 # quit on rate limit errors                                                                                                                  
-                if "rate limit"    in str(e).lower():
+                if "unable to follow more people at this time" in str(e).lower():
                     return
 
 
@@ -297,7 +304,7 @@ class TwitterBot:
                     print("error: %s" % (str(e)))
                 
                 # quit on rate limit errors                                                                                                                  
-                if "rate limit"    in str(e).lower():
+                if "unable to follow more people at this time" in str(e).lower():
                     return
 
 
@@ -324,7 +331,7 @@ class TwitterBot:
                     print("error: %s" % (str(e)))
                 
                 # quit on rate limit errors                                                                                                                  
-                if "rate limit"    in str(e).lower():
+                if "unable to follow more people at this time" in str(e).lower():
                     return
 
 
@@ -335,11 +342,6 @@ class TwitterBot:
 
         following = self.get_follows_list()
         followers = self.get_followers_list()
-
-        # put user IDs here that you want to keep following even if they don't
-        # follow you back
-        # you can look up Twitter account IDs here: http://gettwitterid.com
-        users_keep_following = set([])
 
         not_following_back = following - followers
 
@@ -357,7 +359,7 @@ class TwitterBot:
                 out_file.write(str(val) + "\n")
 
         for user_id in not_following_back:
-            if user_id not in users_keep_following:
+            if user_id not in self.BOT_CONFIG["USERS_KEEP_FOLLOWING"]:
                 self.TWITTER_CONNECTION.friendships.destroy(user_id=user_id)
                 print("unfollowed %d" % (user_id))
 
@@ -372,12 +374,8 @@ class TwitterBot:
 
         not_muted = following - muted
 
-        # put user IDs of people you do not want to mute here
-        # you can look up Twitter account IDs here: http://gettwitterid.com
-        users_keep_unmuted = set([])
-
         for user_id in not_muted:
-            if user_id not in users_keep_unmuted:
+            if user_id not in self.BOT_CONFIG["USERS_KEEP_UNMUTED"]:
                 self.TWITTER_CONNECTION.mutes.users.create(user_id=user_id)
                 print("muted %d" % (user_id))
 
@@ -389,11 +387,7 @@ class TwitterBot:
 
         muted = set(self.TWITTER_CONNECTION.mutes.users.ids(screen_name=self.BOT_CONFIG["TWITTER_HANDLE"])["ids"])
 
-        # put user IDs of people you want to remain muted here
-        # you can look up Twitter account IDs here: http://gettwitterid.com
-        users_keep_muted = set([])
-
         for user_id in muted:
-            if user_id not in users_keep_muted:
+            if user_id not in self.BOT_CONFIG["USERS_KEEP_MUTED"]:
                 self.TWITTER_CONNECTION.mutes.users.destroy(user_id=user_id)
                 print("unmuted %d" % (user_id))

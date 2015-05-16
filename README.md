@@ -22,20 +22,43 @@ You will also need to create an app account on https://dev.twitter.com/apps
 
 ##Usage
 
-###Setting up the bot
+###Configuring the bot
 
 Before running the bot, you must first set it up so it can connect to the Twitter API. Edit config.txt and fill in the missing Twitter information:
 
-	OAUTH_TOKEN:
-	OAUTH_SECRET:
-	CONSUMER_KEY:
-	CONSUMER_SECRET:
-	TWITTER_HANDLE:
-	ALREADY_FOLLOWED_FILE:already-followed.txt
-	FOLLOWERS_FILE:followers.txt
-	FOLLOWS_FILE:following.txt
-	
-You can change the "FILE" names and locations if you want to store that information elsewhere on your computer.
+    OAUTH_TOKEN:
+    OAUTH_SECRET:
+    CONSUMER_KEY:
+    CONSUMER_SECRET:
+    TWITTER_HANDLE:
+    ALREADY_FOLLOWED_FILE:already-followed.txt
+    FOLLOWERS_FILE:followers.txt
+    FOLLOWS_FILE:following.txt
+    USERS_KEEP_FOLLOWING:
+    USERS_KEEP_UNMUTED:
+    USERS_KEEP_MUTED:
+    
+You can change the `FILE` entries if you want to store that information elsewhere on your computer.
+
+Add comma-separated Twitter user IDs to the `USERS_KEEP_*` entries to:
+
+* `USERS_KEEP_FOLLOWING`: Keep following these users even if they don't follow you back.
+
+* `USERS_KEEP_UNMUTED`: Keep these users unmuted (i.e., you receive a mobile notification when they tweet)
+
+* `USERS_KEEP_MUTED`: Keep these users muted (i.e., you don't receive a mobile notification when they tweet)
+
+For example:
+
+    ...
+    FOLLOWS_FILE:following.txt
+    USERS_KEEP_FOLLOWING:1234,1235,1236
+    USERS_KEEP_UNMUTED:
+    ...
+    
+You can look up a users' Twitter ID [here](http://tweeterid.com/).
+
+###Create an instance of the bot
 
 To create an instance of the bot:
 
@@ -60,7 +83,7 @@ Note that this allows you to run multiple instances of the bot with different co
 
 Due to Twitter API rate limiting, the bot must maintain a local cache of all of your followers so it doesn't use all of your API time looking up your followers. It is highly recommended to sync the bot's local cache daily:
 
-	from TwitterBot import TwitterBot
+    from TwitterBot import TwitterBot
     
     my_bot = TwitterBot()
     my_bot.sync_follows()
