@@ -54,7 +54,7 @@ class TwitterBot:
                 value = line[1].strip()
                 self.BOT_CONFIG[parameter] = value
         
-        # make sure that the config file specifies all requires parameters
+        # make sure that the config file specifies all required parameters
         required_parameters = ["OAUTH_TOKEN", "OAUTH_SECRET", "CONSUMER_KEY",
                                "CONSUMER_SECRET", "TWITTER_HANDLE",
                                "ALREADY_FOLLOWED_FILE",
@@ -63,14 +63,15 @@ class TwitterBot:
         missing_parameters = []
 
         for required_parameter in required_parameters:
-            if required_parameter not in self.BOT_CONFIG or self.BOT_CONFIG[required_parameter] == "":
+            if (required_parameter not in self.BOT_CONFIG or
+                self.BOT_CONFIG[required_parameter] == ""):
                 missing_parameters.append(required_parameter)
         
         if len(missing_parameters) > 0:
             self.BOT_CONFIG = {}
             raise Exception("Please edit %s to include the following parameters: %s.\n\n"
-            				"The bot cannot run unless these parameters are specified."
-            				% (config_file, ", ".join(missing_parameters)))
+                            "The bot cannot run unless these parameters are specified."
+                            % (config_file, ", ".join(missing_parameters)))
         
         # make sure all of the sync files exist locally
         for sync_file in [self.BOT_CONFIG["ALREADY_FOLLOWED_FILE"],
@@ -120,7 +121,8 @@ class TwitterBot:
                 out_file.write("%s\n" % (follower))
 
         while next_cursor != 0:
-            followers_status = self.TWITTER_CONNECTION.followers.ids(screen_name=self.BOT_CONFIG["TWITTER_HANDLE"], cursor=next_cursor)
+            followers_status = self.TWITTER_CONNECTION.followers.ids(screen_name=self.BOT_CONFIG["TWITTER_HANDLE"],
+                                                                     cursor=next_cursor)
             followers = set(followers_status["ids"])
             next_cursor = followers_status["next_cursor"]
 
@@ -138,7 +140,8 @@ class TwitterBot:
                 out_file.write("%s\n" % (follow))
 
         while next_cursor != 0:
-            following_status = self.TWITTER_CONNECTION.friends.ids(screen_name=self.BOT_CONFIG["TWITTER_HANDLE"], cursor=next_cursor)
+            following_status = self.TWITTER_CONNECTION.friends.ids(screen_name=self.BOT_CONFIG["TWITTER_HANDLE"],
+                                                                   cursor=next_cursor)
             following = set(following_status["ids"])
             next_cursor = following_status["next_cursor"]
 
