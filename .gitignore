@@ -1,2 +1,9 @@
 *.csv
 *.pyc
+test.py
+
+followers.txt
+
+following.txt
+
+already-followed.txt
