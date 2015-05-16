@@ -60,17 +60,17 @@ class TwitterBot:
                                "ALREADY_FOLLOWED_FILE",
                                "FOLLOWERS_FILE", "FOLLOWS_FILE"]
 
-        missing_parameters = False
+        missing_parameters = []
 
         for required_parameter in required_parameters:
             if required_parameter not in self.BOT_CONFIG or self.BOT_CONFIG[required_parameter] == "":
-                missing_parameters = True
-                print("Missing config parameter: %s" % (required_parameter))
+                missing_parameters.append(required_parameter)
         
-        if missing_parameters:
-            print("\nPlease edit %s to include the parameters listed above and run bot_setup() again.\n" % (config_file))
+        if len(missing_parameters) > 0:
             self.BOT_CONFIG = {}
-            return
+            raise Exception("Please edit %s to include the following parameters: %s.\n\n"
+            				"The bot cannot run unless these parameters are specified."
+            				% (config_file, ", ".join(missing_parameters)))
         
         # make sure all of the sync files exist locally
         for sync_file in [self.BOT_CONFIG["ALREADY_FOLLOWED_FILE"],
@@ -151,11 +151,6 @@ class TwitterBot:
         """
             Returns the set of users the bot has already followed in the past.
         """
-        
-        # make sure the bot has been set up first
-        if self.BOT_CONFIG == {}:
-            print("The bot has not been set up yet. Please run bot_setup() first.")
-            return
 
         dnf_list = []
         with open(self.BOT_CONFIG["ALREADY_FOLLOWED_FILE"], "rb") as in_file:
@@ -169,11 +164,6 @@ class TwitterBot:
         """
             Returns the set of users that are currently following the user.
         """
-        
-        # make sure the bot has been set up first
-        if self.BOT_CONFIG == {}:
-            print("The bot has not been set up yet. Please run bot_setup() first.")
-            return
 
         followers_list = []
         with open(self.BOT_CONFIG["FOLLOWERS_FILE"], "rb") as in_file:
@@ -187,11 +177,6 @@ class TwitterBot:
         """
             Returns the set of users that the user is currently following.
         """
-        
-        # make sure the bot has been set up first
-        if self.BOT_CONFIG == {}:
-            print("The bot has not been set up yet. Please run bot_setup() first.")
-            return
 
         follows_list = []
         with open(self.BOT_CONFIG["FOLLOWS_FILE"], "rb") as in_file:
@@ -205,11 +190,6 @@ class TwitterBot:
         """
             Returns a list of tweets matching a phrase (hashtag, word, etc.).
         """
-        
-        # make sure the bot has been set up first
-        if self.BOT_CONFIG == {}:
-            print("The bot has not been set up yet. Please run bot_setup() first.")
-            return
 
         return self.TWITTER_CONNECTION.search.tweets(q=q, result_type=result_type, count=count)
 
@@ -218,11 +198,6 @@ class TwitterBot:
         """
             Favorites tweets that match a phrase (hashtag, word, etc.).
         """
-        
-        # make sure the bot has been set up first
-        if self.BOT_CONFIG == {}:
-            print("The bot has not been set up yet. Please run bot_setup() first.")
-            return
 
         result = self.search_tweets(q, count, result_type)
 
@@ -245,11 +220,6 @@ class TwitterBot:
         """
             Retweets tweets that match a phrase (hashtag, word, etc.).
         """
-        
-        # make sure the bot has been set up first
-        if self.BOT_CONFIG == {}:
-            print("The bot has not been set up yet. Please run bot_setup() first.")
-            return
 
         result = self.search_tweets(q, count, result_type)
 
@@ -271,11 +241,6 @@ class TwitterBot:
         """
             Follows anyone who tweets about a phrase (hashtag, word, etc.).
         """
-        
-        # make sure the bot has been set up first
-        if self.BOT_CONFIG == {}:
-            print("The bot has not been set up yet. Please run bot_setup() first.")
-            return
 
         result = self.search_tweets(q, count, result_type)
         following = self.get_follows_list()
@@ -304,11 +269,6 @@ class TwitterBot:
         """
             Follows back everyone who's followed you.
         """
-        
-        # make sure the bot has been set up first
-        if self.BOT_CONFIG == {}:
-            print("The bot has not been set up yet. Please run bot_setup() first.")
-            return
 
         following = self.get_follows_list()
         followers = self.get_followers_list()
@@ -326,11 +286,6 @@ class TwitterBot:
         """
             Follows the followers of a specified user.
         """
-        
-        # make sure the bot has been set up first
-        if self.BOT_CONFIG == {}:
-            print("The bot has not been set up yet. Please run bot_setup() first.")
-            return
         
         following = self.get_follows_list()
         followers_of_user = set(self.TWITTER_CONNECTION.followers.ids(screen_name=user_screen_name)["ids"][:count])
@@ -352,11 +307,6 @@ class TwitterBot:
         """
             Unfollows everyone who hasn't followed you back.
         """
-        
-        # make sure the bot has been set up first
-        if self.BOT_CONFIG == {}:
-            print("The bot has not been set up yet. Please run bot_setup() first.")
-            return
 
         following = self.get_follows_list()
         followers = self.get_followers_list()
@@ -392,11 +342,6 @@ class TwitterBot:
             Mutes everyone that you are following.
         """
         
-        # make sure the bot has been set up first
-        if self.BOT_CONFIG == {}:
-            print("The bot has not been set up yet. Please run bot_setup() first.")
-            return
-        
         following = self.get_follows_list()
         muted = set(self.TWITTER_CONNECTION.mutes.users.ids(screen_name=self.BOT_CONFIG["TWITTER_HANDLE"])["ids"])
 
@@ -416,11 +361,6 @@ class TwitterBot:
         """
             Unmutes everyone that you have muted.
         """
-        
-        # make sure the bot has been set up first
-        if self.BOT_CONFIG == {}:
-            print("The bot has not been set up yet. Please run bot_setup() first.")
-            return
         
         muted = set(self.TWITTER_CONNECTION.mutes.users.ids(screen_name=self.BOT_CONFIG["TWITTER_HANDLE"])["ids"])
 
