@@ -1,21 +1,22 @@
 # -*- coding: utf-8 -*-
 
 """
-Copyright 2014 Randal S. Olson
+Copyright 2015 Randal S. Olson
 
 This file is part of the Twitter Follow Bot library.
 
 The Twitter Follow Bot library is free software: you can redistribute it and/or
 modify it under the terms of the GNU General Public License as published by the
-Free Software Foundation, either version 3 of the License, or (at your option) any
-later version.
+Free Software Foundation, either version 3 of the License, or (at your option)
+any later version.
 
-The Twitter Follow Bot library is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
-FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+The Twitter Follow Bot library is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public
+License for more details.
 
-You should have received a copy of the GNU General Public License along with the Twitter
-Follow Bot library. If not, see http://www.gnu.org/licenses/.
+You should have received a copy of the GNU General Public License along with
+the Twitter Follow Bot library. If not, see http://www.gnu.org/licenses/.
 """
 
 from twitter import Twitter, OAuth, TwitterHTTPError
@@ -28,17 +29,116 @@ CONSUMER_KEY = ""
 CONSUMER_SECRET = ""
 TWITTER_HANDLE = ""
 
-# put the full path and file name of the file you want to store your "already followed"
-# list in
-ALREADY_FOLLOWED_FILE = "already-followed.csv"
+# put the full path and file name of the file you want to keep track of all
+# the accounts you've ever followed
+ALREADY_FOLLOWED_FILE = "already-followed.txt"
 
+# put the full paths and file names of the files you want to keep track of
+# your follows in
+FOLLOWS_FILE = "following.txt"
+FOLLOWERS_FILE = "followers.txt"
+
+# make sure all of the sync files exist
+for sync_file in [ALREADY_FOLLOWED_FILE, FOLLOWS_FILE, FOLLOWERS_FILE]:
+    if not os.path.isfile(sync_file):
+        with open(sync_file, "wb") as out_file:
+            out_file.write("")
+
+# create an authorized connection to the Twitter API
 t = Twitter(auth=OAuth(OAUTH_TOKEN, OAUTH_SECRET,
-            CONSUMER_KEY, CONSUMER_SECRET))
+                       CONSUMER_KEY, CONSUMER_SECRET))
+
+
+def sync_follows():
+    """
+        Syncs the user's followers and follows locally so it isn't necessary
+        to repeatedly look them up via the Twitter API.
+
+        It is important to run this method at least daily so the bot is working
+        with a relatively up-to-date version of the user's follows.
+    """
+
+    # sync the user's followers (accounts following the user)
+    followers_status = t.followers.ids(screen_name=TWITTER_HANDLE)
+    followers = set(followers_status["ids"])
+    next_cursor = followers_status["next_cursor"]
+
+    with open(FOLLOWERS_FILE, "wb") as out_file:
+        for follower in followers:
+            out_file.write("%s\n" % (follower))
+
+    while next_cursor != 0:
+        followers_status = t.followers.ids(
+            screen_name=TWITTER_HANDLE, cursor=next_cursor)
+        followers = set(followers_status["ids"])
+        next_cursor = followers_status["next_cursor"]
+
+        with open(FOLLOWERS_FILE, "ab") as out_file:
+            for follower in followers:
+                out_file.write("%s\n" % (follower))
+
+    # sync the user's follows (accounts the user is following)
+    following_status = t.friends.ids(screen_name=TWITTER_HANDLE)
+    following = set(following_status["ids"])
+    next_cursor = following_status["next_cursor"]
+
+    with open(ALREADY_FOLLOWED_FILE, "wb") as out_file:
+        for follow in following:
+            out_file.write("%s\n" % (follow))
+
+    while next_cursor != 0:
+        following_status = t.friends.ids(
+            screen_name=TWITTER_HANDLE, cursor=next_cursor)
+        following = set(following_status["ids"])
+        next_cursor = following_status["next_cursor"]
+
+        with open(ALREADY_FOLLOWED_FILE, "ab") as out_file:
+            for follow in following:
+                out_file.write("%s\n" % (follow))
+
+
+def get_do_not_follow_list():
+    """
+        Returns the set of users the bot has already followed in the past.
+    """
+
+    dnf_list = []
+    with open(ALREADY_FOLLOWED_FILE, "rb") as in_file:
+        for line in in_file:
+            dnf_list.append(int(line))
+
+    return set(dnf_list)
+
+
+def get_followers_list():
+    """
+        Returns the set of users that are currently following the user.
+    """
+
+    followers_list = []
+    with open(FOLLOWERS_FILE, "rb") as in_file:
+        for line in in_file:
+            followers_list.append(int(line))
+
+    return set(followers_list)
+
+
+def get_follows_list():
+    """
+        Returns the set of users that the user is currently following.
+    """
+
+    follows_list = []
+    with open(FOLLOWS_FILE, "rb") as in_file:
+        for line in in_file:
+            follows_list.append(int(line))
+
+    return set(follows_list)
 
 
 def search_tweets(q, count=100, result_type="recent"):
     """
-        Returns a list of tweets matching a certain phrase (hashtag, word, etc.)
+        Returns a list of tweets matching a phrase (hashtag, word, etc.).
     """
 
     return t.search.tweets(q=q, result_type=result_type, count=count)
@@ -46,7 +146,7 @@ def search_tweets(q, count=100, result_type="recent"):
 
 def auto_fav(q, count=100, result_type="recent"):
     """
-        Favorites tweets that match a certain phrase (hashtag, word, etc.)
+        Favorites tweets that match a phrase (hashtag, word, etc.).
     """
 
     result = search_tweets(q, count, result_type)
@@ -62,12 +162,13 @@ def auto_fav(q, count=100, result_type="recent"):
 
         # when you have already favorited a tweet, this error is thrown
         except TwitterHTTPError as e:
-            print("error: %s" % (str(e)))
+            if "you have already favorited this status" not in str(e).lower():
+                print("error: %s" % (str(e)))
 
 
 def auto_rt(q, count=100, result_type="recent"):
     """
-        Retweets tweets that match a certain phrase (hashtag, word, etc.)
+        Retweets tweets that match a phrase (hashtag, word, etc.).
     """
 
     result = search_tweets(q, count, result_type)
@@ -86,37 +187,13 @@ def auto_rt(q, count=100, result_type="recent"):
             print("error: %s" % (str(e)))
 
 
-def get_do_not_follow_list():
-    """
-        Returns list of users the bot has already followed.
-    """
-
-    # make sure the "already followed" file exists
-    if not os.path.isfile(ALREADY_FOLLOWED_FILE):
-        with open(ALREADY_FOLLOWED_FILE, "w") as out_file:
-            out_file.write("")
-
-        # read in the list of user IDs that the bot has already followed in the
-        # past
-    do_not_follow = set()
-    dnf_list = []
-    with open(ALREADY_FOLLOWED_FILE) as in_file:
-        for line in in_file:
-            dnf_list.append(int(line))
-
-    do_not_follow.update(set(dnf_list))
-    del dnf_list
-
-    return do_not_follow
-
-
 def auto_follow(q, count=100, result_type="recent"):
     """
-        Follows anyone who tweets about a specific phrase (hashtag, word, etc.)
+        Follows anyone who tweets about a phrase (hashtag, word, etc.).
     """
 
     result = search_tweets(q, count, result_type)
-    following = set(t.friends.ids(screen_name=TWITTER_HANDLE)["ids"])
+    following = get_follows_list()
     do_not_follow = get_do_not_follow_list()
 
     for tweet in result["statuses"]:
@@ -138,17 +215,18 @@ def auto_follow(q, count=100, result_type="recent"):
                 quit()
 
 
-def auto_follow_followers_for_user(user_screen_name, count=100):
+def auto_follow_followers_of_user(user_screen_name, count=100):
     """
-        Follows the followers of a user
+        Follows the followers of a specified user.
     """
-    following = set(t.friends.ids(screen_name=TWITTER_HANDLE)["ids"])
-    followers_for_user = set(t.followers.ids(screen_name=user_screen_name)["ids"][:count]);
+    following = get_follows_list()
+    followers_of_user = set(
+        t.followers.ids(screen_name=user_screen_name)["ids"][:count])
     do_not_follow = get_do_not_follow_list()
-    
-    for user_id in followers_for_user:
+
+    for user_id in followers_of_user:
         try:
-            if (user_id not in following and 
+            if (user_id not in following and
                 user_id not in do_not_follow):
 
                 t.friendships.create(user_id=user_id, follow=False)
@@ -157,13 +235,14 @@ def auto_follow_followers_for_user(user_screen_name, count=100):
         except TwitterHTTPError as e:
             print("error: %s" % (str(e)))
 
+
 def auto_follow_followers():
     """
-        Follows back everyone who's followed you
+        Follows back everyone who's followed you.
     """
 
-    following = set(t.friends.ids(screen_name=TWITTER_HANDLE)["ids"])
-    followers = set(t.followers.ids(screen_name=TWITTER_HANDLE)["ids"])
+    following = get_follows_list()
+    followers = get_followers_list()
 
     not_following_back = followers - following
 
@@ -176,34 +255,29 @@ def auto_follow_followers():
 
 def auto_unfollow_nonfollowers():
     """
-        Unfollows everyone who hasn't followed you back
+        Unfollows everyone who hasn't followed you back.
     """
 
-    following = set(t.friends.ids(screen_name=TWITTER_HANDLE)["ids"])
-    followers = set(t.followers.ids(screen_name=TWITTER_HANDLE)["ids"])
+    following = get_follows_list()
+    followers = get_followers_list()
 
     # put user IDs here that you want to keep following even if they don't
     # follow you back
+    # you can look up Twitter account IDs here: http://gettwitterid.com
     users_keep_following = set([])
 
     not_following_back = following - followers
 
-    # make sure the "already followed" file exists
-    if not os.path.isfile(ALREADY_FOLLOWED_FILE):
-        with open(ALREADY_FOLLOWED_FILE, "w") as out_file:
-            out_file.write("")
-
     # update the "already followed" file with users who didn't follow back
     already_followed = set(not_following_back)
-    af_list = []
+    already_followed_list = []
     with open(ALREADY_FOLLOWED_FILE) as in_file:
         for line in in_file:
-            af_list.append(int(line))
+            already_followed_list.append(int(line))
 
-    already_followed.update(set(af_list))
-    del af_list
+    already_followed.update(set(already_followed_list))
 
-    with open(ALREADY_FOLLOWED_FILE, "w") as out_file:
+    with open(ALREADY_FOLLOWED_FILE, "wb") as out_file:
         for val in already_followed:
             out_file.write(str(val) + "\n")
 
@@ -215,17 +289,18 @@ def auto_unfollow_nonfollowers():
 
 def auto_mute_following():
     """
-        Mutes everyone that you are following
+        Mutes everyone that you are following.
     """
-    following = set(t.friends.ids(screen_name=TWITTER_HANDLE)["ids"])
+    following = get_follows_list()
     muted = set(t.mutes.users.ids(screen_name=TWITTER_HANDLE)["ids"])
 
     not_muted = following - muted
 
     # put user IDs of people you do not want to mute here
+    # you can look up Twitter account IDs here: http://gettwitterid.com
     users_keep_unmuted = set([])
-            
-    # mute all        
+
+    # mute all
     for user_id in not_muted:
         if user_id not in users_keep_unmuted:
             t.mutes.users.create(user_id=user_id)
@@ -234,14 +309,15 @@ def auto_mute_following():
 
 def auto_unmute():
     """
-        Unmutes everyone that you have muted
+        Unmutes everyone that you have muted.
     """
     muted = set(t.mutes.users.ids(screen_name=TWITTER_HANDLE)["ids"])
 
     # put user IDs of people you want to remain muted here
+    # you can look up Twitter account IDs here: http://gettwitterid.com
     users_keep_muted = set([])
-            
-    # mute all        
+
+    # unmute all
     for user_id in muted:
         if user_id not in users_keep_muted:
             t.mutes.users.destroy(user_id=user_id)
