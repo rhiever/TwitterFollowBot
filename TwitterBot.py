@@ -53,7 +53,7 @@ class TwitterBot:
                 parameter = line[0].strip()
                 value = line[1].strip()
                 self.BOT_CONFIG[parameter] = value
-        
+
         # make sure that the config file specifies all required parameters
         required_parameters = ["OAUTH_TOKEN", "OAUTH_SECRET", "CONSUMER_KEY",
                                "CONSUMER_SECRET", "TWITTER_HANDLE",
@@ -66,13 +66,13 @@ class TwitterBot:
             if (required_parameter not in self.BOT_CONFIG or
                 self.BOT_CONFIG[required_parameter] == ""):
                 missing_parameters.append(required_parameter)
-        
+
         if len(missing_parameters) > 0:
             self.BOT_CONFIG = {}
             raise Exception("Please edit %s to include the following parameters: %s.\n\n"
                             "The bot cannot run unless these parameters are specified."
                             % (config_file, ", ".join(missing_parameters)))
-        
+
         # make sure all of the sync files exist locally
         for sync_file in [self.BOT_CONFIG["ALREADY_FOLLOWED_FILE"],
                           self.BOT_CONFIG["FOLLOWS_FILE"],
@@ -80,13 +80,13 @@ class TwitterBot:
             if not os.path.isfile(sync_file):
                 with open(sync_file, "wb") as out_file:
                     out_file.write("")
-                    
+
         # check how old the follower sync files are and recommend updating them if they are old
         if (time.time() - os.path.getmtime(self.BOT_CONFIG["FOLLOWS_FILE"]) > 86400 or
             time.time() - os.path.getmtime(self.BOT_CONFIG["FOLLOWERS_FILE"]) > 86400):
             print("Warning: Your Twitter follower sync files are more than a day old. "
-                  "It is highly recommended that you sync them by calling sync_follows().")
-                
+                  "It is highly recommended that you sync them by calling sync_follows() before continuing.")
+
         # create an authorized connection to the Twitter API
         self.TWITTER_CONNECTION = Twitter(auth=OAuth(self.BOT_CONFIG["OAUTH_TOKEN"],
                                                      self.BOT_CONFIG["OAUTH_SECRET"],
@@ -217,6 +217,10 @@ class TwitterBot:
             except TwitterHTTPError as e:
                 if "you have already favorited this status" not in str(e).lower():
                     print("error: %s" % (str(e)))
+                    
+                # quit on rate limit errors                                                                                                                  
+                if "rate limit"    in str(e).lower():
+                    return
 
 
     def auto_rt(self, q, count=100, result_type="recent"):
@@ -238,6 +242,10 @@ class TwitterBot:
             # when you have already retweeted a tweet, this error is thrown
             except TwitterHTTPError as e:
                 print("error: %s" % (str(e)))
+                
+                # quit on rate limit errors                                                                                                                  
+                if "rate limit"    in str(e).lower():
+                    return
 
 
     def auto_follow(self, q, count=100, result_type="recent"):
@@ -261,11 +269,13 @@ class TwitterBot:
                     print("followed %s" % (tweet["user"]["screen_name"]))
 
             except TwitterHTTPError as e:
-                print("error: %s" % (str(e)))
+                # don't print "already requested to follow" errors - they're frequent
+                if "already requested to follow" not in str(e).lower():
+                    print("error: %s" % (str(e)))
 
-                # quit on error unless it's because someone blocked me
-                if "blocked" not in str(e).lower():
-                    quit()
+                # quit on rate limit errors                                                                                                                  
+                if "rate limit"    in str(e).lower():
+                    return
 
 
     def auto_follow_followers(self):
@@ -282,14 +292,20 @@ class TwitterBot:
             try:
                 self.TWITTER_CONNECTION.friendships.create(user_id=user_id, follow=False)
             except Exception as e:
-                print("error: %s" % (str(e)))
+                # don't print "already requested to follow" errors - they're frequent
+                if "already requested to follow" not in str(e).lower():
+                    print("error: %s" % (str(e)))
+                
+                # quit on rate limit errors                                                                                                                  
+                if "rate limit"    in str(e).lower():
+                    return
 
 
     def auto_follow_followers_of_user(self, user_screen_name, count=100):
         """
             Follows the followers of a specified user.
         """
-        
+
         following = self.get_follows_list()
         followers_of_user = set(self.TWITTER_CONNECTION.followers.ids(screen_name=user_screen_name)["ids"][:count])
         do_not_follow = self.get_do_not_follow_list()
@@ -303,7 +319,13 @@ class TwitterBot:
                     print("followed %s" % user_id)
 
             except TwitterHTTPError as e:
-                print("error: %s" % (str(e)))
+                # don't print "already requested to follow" errors - they're frequent
+                if "already requested to follow" not in str(e).lower():
+                    print("error: %s" % (str(e)))
+                
+                # quit on rate limit errors                                                                                                                  
+                if "rate limit"    in str(e).lower():
+                    return
 
 
     def auto_unfollow_nonfollowers(self):
@@ -344,7 +366,7 @@ class TwitterBot:
         """
             Mutes everyone that you are following.
         """
-        
+
         following = self.get_follows_list()
         muted = set(self.TWITTER_CONNECTION.mutes.users.ids(screen_name=self.BOT_CONFIG["TWITTER_HANDLE"])["ids"])
 
@@ -364,7 +386,7 @@ class TwitterBot:
         """
             Unmutes everyone that you have muted.
         """
-        
+
         muted = set(self.TWITTER_CONNECTION.mutes.users.ids(screen_name=self.BOT_CONFIG["TWITTER_HANDLE"])["ids"])
 
         # put user IDs of people you want to remain muted here
