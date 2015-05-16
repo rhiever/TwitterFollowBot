@@ -4,7 +4,7 @@ A Python bot that automates several actions on Twitter, such as following users 
 
 ##Disclaimer
 
-I hold no liability for what you do with this script or what happens to you by using this script. Abusing this script *can* get you banned from Twitter, so make sure to read up on proper usage of the Twitter API.
+I hold no liability for what you do with this bot or what happens to you by using this bot. Abusing this bot *can* get you banned from Twitter, so make sure to read up on proper usage of the Twitter API.
 
 ##Dependencies
 
