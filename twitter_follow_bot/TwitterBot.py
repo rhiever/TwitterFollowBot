@@ -204,6 +204,14 @@ class TwitterBot:
         return self.TWITTER_CONNECTION.search.tweets(q=q, result_type=result_type, count=count)
 
 
+    def send_tweet(self, q):
+        """
+            Post a message to twitter.
+        """
+
+        return self.TWITTER_CONNECTION.statuses.update(status=q)
+
+
     def auto_fav(self, q, count=100, result_type="recent"):
         """
             Favorites tweets that match a phrase (hashtag, word, etc.).

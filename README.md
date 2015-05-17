@@ -170,6 +170,13 @@ You will need to manually edit the code if you want to add special users that yo
     
 You will need to manually edit the code if you want to add special users that will remain muted. 
 
+####Post a tweet on twitter
+
+    from TwitterBot import TwitterBot
+    
+    my_bot = TwitterBot()
+    my_bot.send_tweet("Hello world!")
+    
 ##Have questions? Need help with the bot?
 
 If you're having issues with or have questions about the bot, please [file an issue](https://github.com/rhiever/twitter-follow-bot/issues) in this repository so one of the project managers can get back to you. Please check the existing (and closed) issues to make sure your issue hasn't already been addressed.
