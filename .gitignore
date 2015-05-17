@@ -7,3 +7,12 @@ followers.txt
 following.txt
 
 already-followed.txt
+
+bin/
+include/
+lib/
+share/
+pip-selfcheck.json
+.Python
+dist/
+twitter_follow_bot.egg-info/
