@@ -1,0 +1,8 @@
+ipython==2.0.0
+ipdb==0.8
+dbgp==1.1
+vim-debug==1.5.4
+pep8==1.5.7
+flake8==2.2.5
+pyflakes==0.8.1
+isort==3.9.0
