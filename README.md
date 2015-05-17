@@ -175,7 +175,7 @@ You will need to manually edit the code if you want to add special users that wi
     from TwitterBot import TwitterBot
     
     my_bot = TwitterBot()
-    my_bot.send_tweet()
+    my_bot.send_tweet("Hello world!")
     
 ##Have questions? Need help with the bot?
 
