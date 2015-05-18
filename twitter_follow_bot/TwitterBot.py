@@ -47,7 +47,7 @@ class TwitterBot:
             If you want to modify the bot configuration, edit your config.txt.
         """
 
-        with open(config_file, "rb") as in_file:
+        with open(config_file, "r") as in_file:
             for line in in_file:
                 line = line.split(":")
                 parameter = line[0].strip()
@@ -85,7 +85,7 @@ class TwitterBot:
                           self.BOT_CONFIG["FOLLOWS_FILE"],
                           self.BOT_CONFIG["FOLLOWERS_FILE"]]:
             if not os.path.isfile(sync_file):
-                with open(sync_file, "wb") as out_file:
+                with open(sync_file, "w") as out_file:
                     out_file.write("")
 
         # check how old the follower sync files are and recommend updating them if they are old
@@ -123,7 +123,7 @@ class TwitterBot:
         followers = set(followers_status["ids"])
         next_cursor = followers_status["next_cursor"]
 
-        with open(self.BOT_CONFIG["FOLLOWERS_FILE"], "wb") as out_file:
+        with open(self.BOT_CONFIG["FOLLOWERS_FILE"], "w") as out_file:
             for follower in followers:
                 out_file.write("%s\n" % (follower))
 
@@ -133,7 +133,7 @@ class TwitterBot:
             followers = set(followers_status["ids"])
             next_cursor = followers_status["next_cursor"]
 
-            with open(self.BOT_CONFIG["FOLLOWERS_FILE"], "ab") as out_file:
+            with open(self.BOT_CONFIG["FOLLOWERS_FILE"], "a") as out_file:
                 for follower in followers:
                     out_file.write("%s\n" % (follower))
 
@@ -142,7 +142,7 @@ class TwitterBot:
         following = set(following_status["ids"])
         next_cursor = following_status["next_cursor"]
 
-        with open(self.BOT_CONFIG["FOLLOWS_FILE"], "wb") as out_file:
+        with open(self.BOT_CONFIG["FOLLOWS_FILE"], "w") as out_file:
             for follow in following:
                 out_file.write("%s\n" % (follow))
 
@@ -152,7 +152,7 @@ class TwitterBot:
             following = set(following_status["ids"])
             next_cursor = following_status["next_cursor"]
 
-            with open(self.BOT_CONFIG["FOLLOWS_FILE"], "ab") as out_file:
+            with open(self.BOT_CONFIG["FOLLOWS_FILE"], "a") as out_file:
                 for follow in following:
                     out_file.write("%s\n" % (follow))
 
@@ -163,7 +163,7 @@ class TwitterBot:
         """
 
         dnf_list = []
-        with open(self.BOT_CONFIG["ALREADY_FOLLOWED_FILE"], "rb") as in_file:
+        with open(self.BOT_CONFIG["ALREADY_FOLLOWED_FILE"], "r") as in_file:
             for line in in_file:
                 dnf_list.append(int(line))
 
@@ -176,7 +176,7 @@ class TwitterBot:
         """
 
         followers_list = []
-        with open(self.BOT_CONFIG["FOLLOWERS_FILE"], "rb") as in_file:
+        with open(self.BOT_CONFIG["FOLLOWERS_FILE"], "r") as in_file:
             for line in in_file:
                 followers_list.append(int(line))
 
@@ -189,7 +189,7 @@ class TwitterBot:
         """
 
         follows_list = []
-        with open(self.BOT_CONFIG["FOLLOWS_FILE"], "rb") as in_file:
+        with open(self.BOT_CONFIG["FOLLOWS_FILE"], "r") as in_file:
             for line in in_file:
                 follows_list.append(int(line))
 
@@ -370,7 +370,7 @@ class TwitterBot:
 
         already_followed.update(set(already_followed_list))
 
-        with open(self.BOT_CONFIG["ALREADY_FOLLOWED_FILE"], "wb") as out_file:
+        with open(self.BOT_CONFIG["ALREADY_FOLLOWED_FILE"], "w") as out_file:
             for val in already_followed:
                 out_file.write(str(val) + "\n")
 
