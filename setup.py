@@ -56,7 +56,6 @@ setup(
     author_email='rso@randalolson.com',
     packages=find_packages(),
     url='https://github.com/rhiever/twitter-follow-bot',
-    download_url='https://github.com/rhiever/twitter-follow-bot/archive/v2.0.tar.gz',
     license='GNU/GPLv3',
     description=('A Python bot that automates several actions on Twitter, '
                  'such as following users and favoriting tweets.'),
