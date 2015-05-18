@@ -16,7 +16,7 @@ def calculate_version():
     # Also, when git is not available (PyPi package), use stored version.py.
     version_py = os.path.join(os.path.dirname(__file__), 'version.py')
     try:
-        version_git = subprocess.check_output(["git", "describe"]).rstrip()
+        version_git = subprocess.check_output(["git", "tag"]).rstrip().split("\n")[-1]
     except Exception:
         with open(version_py, 'r') as fh:
             version_git = (open(version_py).read()
@@ -52,11 +52,11 @@ def get_long_description():
 setup(
     name='twitter_follow_bot',
     version=version_git,
-    author='Randy Olson',
+    author='Randal S. Olson',
     author_email='rso@randalolson.com',
     packages=find_packages(),
     url='https://github.com/rhiever/twitter-follow-bot',
-    download_url='https://github.com/rhiever/twitter-follow-bot/archive/v2.0.tar.gz'
+    download_url='https://github.com/rhiever/twitter-follow-bot/archive/v2.0.tar.gz',
     license='GNU/GPLv3',
     description=('A Python bot that automates several actions on Twitter, '
                  'such as following users and favoriting tweets.'),
