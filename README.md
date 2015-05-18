@@ -8,19 +8,17 @@ I hold no liability for what you do with this bot or what happens to you by usin
 
 ##Installation
 
-You can install the bot using `easy_install` or `pip`:
-
-    easy_install twitter_follow_bot
-
-or
+You can install the bot using `pip`:
 
     pip install twitter_follow_bot
 
 ##Dependencies
 
-You will need to install Python's [python-twitter](https://github.com/sixohsix/twitter/) library first:
+You will need to install Python's [python-twitter](https://github.com/sixohsix/twitter/) library:
 
-    easy_install twitter
+    pip install twitter
+    
+Although this library should be installed along with `twitter_follow_bot` if you used `pip`.
     
 You will also need to create an app account on https://dev.twitter.com/apps
 
