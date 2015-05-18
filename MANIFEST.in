@@ -1,2 +1,2 @@
 include AUTHORS README.md LICENSE requirements.txt requirements.*.txt Makefile version.py
-recursive-include TwitterBot *.py
+recursive-include TwitterFollowBot *.py
