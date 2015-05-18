@@ -1,2 +1,1 @@
-include AUTHORS README.md LICENSE requirements.txt requirements.*.txt Makefile version.py
-recursive-include twitter_follow_bot *.py
+include AUTHORS README.md LICENSE requirements.txt requirements.*.txt Makefile version.py TwitterBot.py __init__.py
