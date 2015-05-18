@@ -8,24 +8,26 @@ I hold no liability for what you do with this bot or what happens to you by usin
 
 ##Installation
 
-You can install the bot using `pip`:
+You can install the Twitter Follow Bot using `pip`:
 
-    pip install twitter_follow_bot
+    pip install TwitterFollowBot
 
 ##Dependencies
 
 You will need to install Python's [python-twitter](https://github.com/sixohsix/twitter/) library:
 
     pip install twitter
-    
-Although this library should be installed along with `twitter_follow_bot` if you used `pip`.
-    
+
+Although this library should be installed along with the Twitter Follow Bot if you used `pip`.
+
 You will also need to create an app account on https://dev.twitter.com/apps
 
 1. Sign in with your Twitter account
 2. Create a new app account
 3. Modify the settings for that app account to allow read & write
 4. Generate a new OAuth token with those permissions
+
+Following these steps will create 4 tokens that you will need to place in the configuration file discussed below.
 
 ##Usage
 
