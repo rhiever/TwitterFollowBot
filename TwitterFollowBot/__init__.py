@@ -17,11 +17,12 @@ FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more de
 You should have received a copy of the GNU General Public License along with
 the Twitter Bot library. If not, see http://www.gnu.org/licenses/.
 """
-
+from __future__ import print_function
 from twitter import Twitter, OAuth, TwitterHTTPError
 import os
 import sys
 import time
+import random
 
 
 class TwitterBot:
@@ -39,6 +40,31 @@ class TwitterBot:
         self.TWITTER_CONNECTION = None
 
         self.bot_setup(config_file)
+
+        # Used for random timers
+        random.seed()
+
+    def wait_on_action(self):
+        min_time = 0
+        max_time = 0
+        if "FOLLOW_BACKOFF_MIN_SECONDS" in self.BOT_CONFIG:
+            min_time = int(self.BOT_CONFIG["FOLLOW_BACKOFF_MIN_SECONDS"])
+
+        if "FOLLOW_BACKOFF_MAX_SECONDS" in self.BOT_CONFIG:
+            max_time = int(self.BOT_CONFIG["FOLLOW_BACKOFF_MAX_SECONDS"])
+
+        if min_time > max_time:
+            temp = min_time
+            min_time = max_time
+            max_time = temp
+
+        wait_time = random.randint(min_time, max_time)
+
+        if wait_time > 0:
+            print("Choosing time between %d and %d - waiting %d seconds before action" % (min_time, max_time, wait_time))
+            time.sleep(wait_time)
+
+        return wait_time
 
     def bot_setup(self, config_file="config.txt"):
         """
@@ -60,6 +86,8 @@ class TwitterBot:
                         self.BOT_CONFIG[parameter] = set([int(x) for x in value.split(",")])
                     else:
                         self.BOT_CONFIG[parameter] = set()
+                elif parameter in ["FOLLOW_BACKOFF_MIN_SECONDS", "FOLLOW_BACKOFF_MAX_SECONDS"]:
+                    self.BOT_CONFIG[parameter] = int(value)
                 else:
                     self.BOT_CONFIG[parameter] = value
 
@@ -265,6 +293,8 @@ class TwitterBot:
                         tweet["user"]["id"] not in following and
                         tweet["user"]["id"] not in do_not_follow):
 
+                    self.wait_on_action()
+
                     self.TWITTER_CONNECTION.friendships.create(user_id=tweet["user"]["id"], follow=False)
                     following.update(set([tweet["user"]["id"]]))
 
@@ -296,6 +326,8 @@ class TwitterBot:
 
         for user_id in not_following_back:
             try:
+                self.wait_on_action()
+
                 self.TWITTER_CONNECTION.friendships.create(user_id=user_id, follow=False)
             except TwitterHTTPError as api_error:
                 # quit on rate limit errors
@@ -322,6 +354,8 @@ class TwitterBot:
             try:
                 if (user_id not in following and
                         user_id not in do_not_follow):
+
+                    self.wait_on_action()
 
                     self.TWITTER_CONNECTION.friendships.create(user_id=user_id, follow=False)
                     print("Followed %s" % user_id, file=sys.stdout)

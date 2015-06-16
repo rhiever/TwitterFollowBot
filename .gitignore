@@ -12,3 +12,4 @@ pip-selfcheck.json
 .Python
 dist/
 TwitterFollowBot.egg-info/
+.idea

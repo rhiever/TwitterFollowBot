@@ -46,6 +46,8 @@ Before running the bot, you must first set it up so it can connect to the Twitte
     USERS_KEEP_FOLLOWING:
     USERS_KEEP_UNMUTED:
     USERS_KEEP_MUTED:
+    FOLLOW_BACKOFF_MIN_SECONDS:10
+    FOLLOW_BACKOFF_MAX_SECONDS:60
     
 `OAUTH_TOKEN`, `OAUTH_SECRET`, `CONSUMER_KEY`, `CONSUMER_SECRET` are your API keys that you received from creating your app account. `TWITTER_HANDLE` is your Twitter name, case-sensitive.
 
