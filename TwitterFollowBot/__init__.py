@@ -323,7 +323,7 @@ class TwitterBot:
         followers = self.get_followers_list()
 
         not_following_back = followers - following
-        not_following_back = not_following_back[:count]
+        not_following_back = list(not_following_back)[:count]
         for user_id in not_following_back:
             try:
                 self.wait_on_action()
@@ -382,7 +382,7 @@ class TwitterBot:
         followers = self.get_followers_list()
 
         not_following_back = following - followers
-        not_following_back = not_following_back[:count]
+        not_following_back = list(not_following_back)[:count]
         # update the "already followed" file with users who didn't follow back
         already_followed = set(not_following_back)
         already_followed_list = []
