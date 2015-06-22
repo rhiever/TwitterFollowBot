@@ -314,7 +314,7 @@ class TwitterBot:
                 if "already requested to follow" not in str(api_error).lower():
                     print("Error: %s" % (str(api_error)), file=sys.stderr)
 
-    def auto_follow_followers(self):
+    def auto_follow_followers(self,count=None):
         """
             Follows back everyone who's followed you.
         """
@@ -323,7 +323,7 @@ class TwitterBot:
         followers = self.get_followers_list()
 
         not_following_back = followers - following
-
+        not_following_back = not_following_back[:count]
         for user_id in not_following_back:
             try:
                 self.wait_on_action()
@@ -373,7 +373,7 @@ class TwitterBot:
                 if "already requested to follow" not in str(api_error).lower():
                     print("Error: %s" % (str(api_error)), file=sys.stderr)
 
-    def auto_unfollow_nonfollowers(self):
+    def auto_unfollow_nonfollowers(self,count=None):
         """
             Unfollows everyone who hasn't followed you back.
         """
@@ -382,7 +382,7 @@ class TwitterBot:
         followers = self.get_followers_list()
 
         not_following_back = following - followers
-
+        not_following_back = not_following_back[:count]
         # update the "already followed" file with users who didn't follow back
         already_followed = set(not_following_back)
         already_followed_list = []
