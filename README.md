@@ -167,7 +167,18 @@ By default, the bot looks up the 100 most recent tweets. You can change this num
     my_bot = TwitterBot()
     my_bot.auto_unfollow_nonfollowers()
   
+If there are certain users that you would like to not unfollow, add their user id to the USERS_KEEP_FOLLOWING list.
+
 You will need to manually edit the code if you want to add special users that you will keep following even if they don't follow you back.
+
+####Automatically unfollow all users.
+
+    from TwitterFollowBot import TwitterBot
+    
+    my_bot = TwitterBot()
+    my_bot.auto_unfollow_all_followers()
+  
+
 
 ####Automatically mute all users that you have followed
 

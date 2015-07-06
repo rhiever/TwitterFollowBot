@@ -398,9 +398,23 @@ class TwitterBot:
 
         for user_id in not_following_back:
             if user_id not in self.BOT_CONFIG["USERS_KEEP_FOLLOWING"]:
-                
+
                 self.wait_on_action()
-                
+
+                self.TWITTER_CONNECTION.friendships.destroy(user_id=user_id)
+                print("Unfollowed %d" % (user_id), file=sys.stdout)
+
+    def auto_unfollow_all_followers(self,count=None):
+        """
+            Unfollows everyone that you are following(except those who you have specified not to)
+        """
+        following = self.get_follows_list()
+
+        for user_id in following:
+            if user_id not in self.BOT_CONFIG["USERS_KEEP_FOLLOWING"]:
+
+                self.wait_on_action()
+
                 self.TWITTER_CONNECTION.friendships.destroy(user_id=user_id)
                 print("Unfollowed %d" % (user_id), file=sys.stdout)
 
