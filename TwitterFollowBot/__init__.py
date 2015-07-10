@@ -452,16 +452,15 @@ class TwitterBot:
 
         return self.TWITTER_CONNECTION.statuses.update(status=message)
 
-     def reply(self, keyword, message, count):
+    def reply(self, keyword, message, count):
         """
             Reply to people who tweeted a message with the keyword given.
             Count is the number of people to tweet to.
         """
 
-        result = self.search_tweets('#shopping', 2)
+        result = self.search_tweets(keyword, 2)
         for tweets in result["statuses"]:
             id = tweets["id_str"]
             user = tweets["user"]["screen_name"]
             final_message = "@" + user + " " + message
-            print(final_message)
             self.TWITTER_CONNECTION.statuses.update(status=final_message, in_reply_to_status_id=id)
