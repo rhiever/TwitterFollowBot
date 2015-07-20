@@ -44,6 +44,27 @@ class TwitterBot:
         # Used for random timers
         random.seed()
 
+        self.tweet_count = 0
+        # Opens the file with all the tweet's id. Loads the ids in a list.
+        # Handles exception if the file's not there and creates it.
+        try:
+            # If the file is younger than a day we use it
+            if time.time() - os.path.getmtime('id_tweets.txt') < 86400:
+                with open('id_tweets.txt', 'r') as list_id:
+                    self.var_list_id = list_id.read().splitlines()
+            # If the file is too old, we erase its content and var_list_id will be an empty list.
+            else:
+                print('File too old.')
+                open('id_tweets.txt', 'w').close()
+                self.var_list_id = list()
+
+        except FileNotFoundError:
+            # If the file is not there, we create it.
+            with open('id_tweets.txt', 'w') as list_id:
+                self.var_list_id = list()
+                list_id.close()
+                print('Creating the id_tweets.txt file...')
+
     def wait_on_action(self):
         min_time = 0
         max_time = 0
@@ -452,15 +473,81 @@ class TwitterBot:
 
         return self.TWITTER_CONNECTION.statuses.update(status=message)
 
-    def reply(self, keyword, message, count):
+    def reply(self, keyword, delay=30, message_file="messages.txt", count=50):
         """
             Reply to people who tweeted a message with the keyword given.
             Count is the number of people to tweet to.
+            Can't reply to the same tweet several times.
+            Delay is the time between each tweets.
+            Handles several keywords
         """
+        text = ''
+        # Gets the tweets
+        result = self.search_tweets(keyword, count)
+        list_keyword = list()
+        # If there are several keywords use only the twitter search.
+        if " " in keyword:
+            count = 0
+            list_keyword = keyword.split(" ")
+            for tweets in result["statuses"]:
+                # We count the keywords in the tweet text.
+                for words in list_keyword:
+                    if words.lower() in tweets["text"].lower():
+                        count += 1
+                #If all the keywords are in the text we reply.
+                if count == len(list_keyword):
+                    self.send_reply(tweets, message_file, delay)
+                else:
+                    print("No tweets found for the keywords given...\n")
+                count = 0
+        # If there is only one keyword check if it's found in the text and not in the username.
+        else:
+            try:
+                for tweets in result["statuses"]:
+                    if keyword.lower() in tweets["text"].lower():
+                        self.send_reply(tweets, message_file, delay)
+            except TwitterHTTPError as e:
+                print("You may have been detected as a spammer. The program will now exit.\n")
+                print(e)
+                exit()
+                pass
+            except:
+                print('Error getting the tweets')
+        # Add the tweets' id to the file if we already replied. Happens when we replied to all tweets.
+        with open('id_tweets.txt', 'w') as list_id:
+            for id in self.var_list_id:
+                text += id + "\n"
+            list_id.write(text)
 
-        result = self.search_tweets(keyword, 2)
-        for tweets in result["statuses"]:
-            id = tweets["id_str"]
-            user = tweets["user"]["screen_name"]
-            final_message = "@" + user + " " + message
-            self.TWITTER_CONNECTION.statuses.update(status=final_message, in_reply_to_status_id=id)
+    def send_reply(self, tweets, message_file, delay=30):
+        text = ''
+        id = tweets["id_str"]
+        # We check if we already replied to the tweet before. If not we reply.
+        if id not in self.var_list_id:
+            # Open the file with the messages to send.
+            try:
+                with open(message_file, 'r') as file_messages:
+                    # Put the messages in a list.
+                    list_messages = file_messages.read().splitlines()
+                    # Generate a random number to use a random message from the list.
+                    rand = random.randrange(0, len(list_messages))
+                    # Gets the username of the person who tweeted.
+                    user = tweets["user"]["screen_name"]
+                    # Create the message with the @username to reply
+                    final_message = "@" + user + " " + list_messages[rand]
+                    # Delay between each tweets
+                    if delay < 30:
+                        delay = 30
+                    time.sleep(random.randrange(delay - delay/2, delay + delay/2))
+                    self.TWITTER_CONNECTION.statuses.update(status=final_message, in_reply_to_status_id=id)
+                    self.tweet_count += 1
+                    print("Id : " + id + "\nText : " + str(tweets["text"].encode("utf-8")) + "\nUsername : "
+                          + tweets["user"]["screen_name"]
+                          + "\nReply : " + final_message + "\n" + "Tweet envoyé : " + str(self.tweet_count) + "\n")
+                    self.var_list_id.append(id)
+            except FileNotFoundError:
+                print("You specified a wrong path to the message file..\n")
+                raise FileNotFoundError
+        # If we already replied to the tweet, inform the user.
+        else:
+            print('Already replied to this tweet.\n')
