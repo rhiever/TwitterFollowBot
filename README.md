@@ -204,6 +204,17 @@ You will need to manually edit the code if you want to add special users that wi
     
     my_bot = TwitterBot()
     my_bot.send_tweet("Hello world!")
+
+####Automatically add users tweeting about something to one of your list
+
+    from TwitterFollowBot import TwitterBot
+    
+    my_bot = TwitterBot()
+    my_bot.auto_add_to_list("#TwitterBot", "twitterbot-list", count=10)
+    
+In the example above, the bot will try to add 10 users to the twitterbot-list that are tweeting #TwitterBot.
+
+Remember that the max number of users in a list is 5000.
     
 ##Have questions? Need help with the bot?
 
