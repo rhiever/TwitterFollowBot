@@ -468,6 +468,5 @@ class TwitterBot:
                                                                       slug=list_slug,
                                                                       screen_name=tweet["user"]["screen_name"])
                 print("User %s added to the list %s" % (tweet["user"]["screen_name"], list_slug), file=sys.stdout)
-            # when you have already favorited a tweet, this error is thrown
             except TwitterHTTPError as api_error:
                 print(api_error)
