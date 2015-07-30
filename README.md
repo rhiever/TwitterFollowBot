@@ -159,6 +159,13 @@ By default, the bot looks up the 100 most recent tweets. You can change this num
     
     my_bot = TwitterBot()
     my_bot.auto_rt("phrase", count=1000)
+    
+####Automatically favorite a tweet with a specific phrase, then follow that user
+
+    from TwitterFollowBot import TwitterBot
+    
+    my_bot = TwitterBot()
+    my_bot.auto_fav_then_follow("phrase", count=1000)
 
 ####Automatically unfollow any users that have not followed you back
 
