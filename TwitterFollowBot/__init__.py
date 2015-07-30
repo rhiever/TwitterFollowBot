@@ -341,6 +341,62 @@ class TwitterBot:
                 if "already requested to follow" not in str(api_error).lower():
                     print("Error: %s" % (str(api_error)), file=sys.stderr)
 
+    def auto_fav_then_follow(self, phrase, count=100, result_type="recent"):
+        """
+            Follows anyone who tweets about a phrase (hashtag, word, etc.) after you favorite that tweet
+        """
+
+        result = self.search_tweets(phrase, count, result_type)
+        following = self.get_follows_list()
+        do_not_follow = self.get_do_not_follow_list()
+
+        for tweet in result["statuses"]:
+
+            try:
+                # don't favorite your own tweets
+                if tweet["user"]["screen_name"] == self.BOT_CONFIG["TWITTER_HANDLE"]:
+                    continue
+
+                result = self.TWITTER_CONNECTION.favorites.create(_id=tweet["id"])
+                print("Favorited: %s" % (result["text"].encode("utf-8")), file=sys.stdout)
+
+                try:
+                    if (tweet["user"]["screen_name"] != self.BOT_CONFIG["TWITTER_HANDLE"] and
+                            tweet["user"]["id"] not in following and
+                            tweet["user"]["id"] not in do_not_follow):
+
+                        self.wait_on_action()
+
+                        self.TWITTER_CONNECTION.friendships.create(user_id=tweet["user"]["id"], follow=False)
+                        following.update(set([tweet["user"]["id"]]))
+
+                        print("Followed %s" %
+                              (tweet["user"]["screen_name"]), file=sys.stdout)
+
+                except TwitterHTTPError as api_error:
+                    # quit on rate limit errors
+                    if "unable to follow more people at this time" in str(api_error).lower():
+                        print("You are unable to follow more people at this time. "
+                              "Wait a while before running the bot again or gain "
+                              "more followers.", file=sys.stderr)
+                        return
+
+                    # don't print "already requested to follow" errors - they're
+                    # frequent
+                    if "already requested to follow" not in str(api_error).lower():
+                        print("Error: %s" % (str(api_error)), file=sys.stderr)
+
+            # when you have already favorited a tweet, this error is thrown
+            except TwitterHTTPError as api_error:
+                # quit on rate limit errors
+                if "rate limit" in str(api_error).lower():
+                    print("You have been rate limited. "
+                          "Wait a while before running the bot again.", file=sys.stderr)
+                    return
+
+                if "you have already favorited this status" not in str(api_error).lower():
+                    print("Error: %s" % (str(api_error)), file=sys.stderr)
+
     def auto_follow_followers_of_user(self, user_twitter_handle, count=100):
         """
             Follows the followers of a specified user.
