@@ -218,6 +218,9 @@ class TwitterBot:
 
         return set(follows_list)
 
+
+
+
     def search_tweets(self, phrase, count=100, result_type="recent"):
         """
             Returns a list of tweets matching a phrase (hashtag, word, etc.).
@@ -225,21 +228,50 @@ class TwitterBot:
 
         return self.TWITTER_CONNECTION.search.tweets(q=phrase, result_type=result_type, count=count)
 
-    def auto_fav(self, phrase, count=100, result_type="recent"):
+    def auto_fav_phrase(self, phrase, count = 100, result_type="recent"):
+        searched_tweets = self.search_tweets(phrase, count, result_type)
+        self.auto_fav(searched_tweets)
+
+    def auto_rt_phrase(self, phrase, count = 100, result_type="recent"):
+        searched_tweets = self.search_tweets(phrase, count, result_type)
+        self.auto_rt(searched_tweets)
+
+    def auto_follow_from_phrase(self, phrase, count = 100, result_type="recent"):
+        searched_tweets = self.search_tweets(phrase, count, result_type)
+        self.auto_follow(searched_tweets)
+
+    def auto_fav_phrase_then_follow(self, phrase, count=100, result_type="recent"):
+        """
+            Follows anyone who tweets about a phrase (hashtag, word, etc.) after you favorite that tweet
+        """
+        searched_tweets = self.search_tweets(phrase, count, result_type)
+        self.auto_fav(searched_tweets)
+        self.auto_follow(searched_tweets)
+
+    def auto_rt_phrase_then_follow(self, phrase, count=100, result_type="recent"):
+        """
+            Follows anyone who tweets about a phrase (hashtag, word, etc.) after you rt that tweet
+        """
+        searched_tweets = self.search_tweets(phrase, count, result_type)
+        self.auto_rt(searched_tweets)
+        self.auto_follow(searched_tweets)
+
+
+
+
+    def auto_fav(self, searched_tweets):
         """
             Favorites tweets that match a phrase (hashtag, word, etc.).
         """
 
-        result = self.search_tweets(phrase, count, result_type)
-
-        for tweet in result["statuses"]:
+        for tweet in searched_tweets["statuses"]:
             try:
                 # don't favorite your own tweets
                 if tweet["user"]["screen_name"] == self.BOT_CONFIG["TWITTER_HANDLE"]:
                     continue
 
-                result = self.TWITTER_CONNECTION.favorites.create(_id=tweet["id"])
-                print("Favorited: %s" % (result["text"].encode("utf-8")), file=sys.stdout)
+                searched_tweet = self.TWITTER_CONNECTION.favorites.create(_id=tweet["id"])
+                print("Favorited: %s" % (searched_tweet["text"].encode("utf-8")), file=sys.stdout)
 
             # when you have already favorited a tweet, this error is thrown
             except TwitterHTTPError as api_error:
@@ -252,21 +284,19 @@ class TwitterBot:
                 if "you have already favorited this status" not in str(api_error).lower():
                     print("Error: %s" % (str(api_error)), file=sys.stderr)
 
-    def auto_rt(self, phrase, count=100, result_type="recent"):
+    def auto_rt(self, searched_tweets):
         """
             Retweets tweets that match a phrase (hashtag, word, etc.).
         """
 
-        result = self.search_tweets(phrase, count, result_type)
-
-        for tweet in result["statuses"]:
+        for tweet in searched_tweets["statuses"]:
             try:
                 # don't retweet your own tweets
                 if tweet["user"]["screen_name"] == self.BOT_CONFIG["TWITTER_HANDLE"]:
                     continue
 
-                result = self.TWITTER_CONNECTION.statuses.retweet(id=tweet["id"])
-                print("Retweeted: %s" % (result["text"].encode("utf-8")), file=sys.stdout)
+                searched_tweet = self.TWITTER_CONNECTION.statuses.retweet(id=tweet["id"])
+                print("Retweeted: %s" % (searched_tweet["text"].encode("utf-8")), file=sys.stdout)
 
             # when you have already retweeted a tweet, this error is thrown
             except TwitterHTTPError as api_error:
@@ -278,16 +308,15 @@ class TwitterBot:
 
                 print("Error: %s" % (str(api_error)), file=sys.stderr)
 
-    def auto_follow(self, phrase, count=100, result_type="recent"):
+    def auto_follow(self, searched_tweets):
         """
             Follows anyone who tweets about a phrase (hashtag, word, etc.).
         """
 
-        result = self.search_tweets(phrase, count, result_type)
         following = self.get_follows_list()
         do_not_follow = self.get_do_not_follow_list()
 
-        for tweet in result["statuses"]:
+        for tweet in searched_tweets["statuses"]:
             try:
                 if (tweet["user"]["screen_name"] != self.BOT_CONFIG["TWITTER_HANDLE"] and
                         tweet["user"]["id"] not in following and
@@ -313,6 +342,9 @@ class TwitterBot:
                 # frequent
                 if "already requested to follow" not in str(api_error).lower():
                     print("Error: %s" % (str(api_error)), file=sys.stderr)
+
+
+
 
     def auto_follow_followers(self,count=None):
         """
@@ -341,61 +373,7 @@ class TwitterBot:
                 if "already requested to follow" not in str(api_error).lower():
                     print("Error: %s" % (str(api_error)), file=sys.stderr)
 
-    def auto_fav_then_follow(self, phrase, count=100, result_type="recent"):
-        """
-            Follows anyone who tweets about a phrase (hashtag, word, etc.) after you favorite that tweet
-        """
 
-        result = self.search_tweets(phrase, count, result_type)
-        following = self.get_follows_list()
-        do_not_follow = self.get_do_not_follow_list()
-
-        for tweet in result["statuses"]:
-
-            try:
-                # don't favorite your own tweets
-                if tweet["user"]["screen_name"] == self.BOT_CONFIG["TWITTER_HANDLE"]:
-                    continue
-
-                result = self.TWITTER_CONNECTION.favorites.create(_id=tweet["id"])
-                print("Favorited: %s" % (result["text"].encode("utf-8")), file=sys.stdout)
-
-                try:
-                    if (tweet["user"]["screen_name"] != self.BOT_CONFIG["TWITTER_HANDLE"] and
-                            tweet["user"]["id"] not in following and
-                            tweet["user"]["id"] not in do_not_follow):
-
-                        self.wait_on_action()
-
-                        self.TWITTER_CONNECTION.friendships.create(user_id=tweet["user"]["id"], follow=False)
-                        following.update(set([tweet["user"]["id"]]))
-
-                        print("Followed %s" %
-                              (tweet["user"]["screen_name"]), file=sys.stdout)
-
-                except TwitterHTTPError as api_error:
-                    # quit on rate limit errors
-                    if "unable to follow more people at this time" in str(api_error).lower():
-                        print("You are unable to follow more people at this time. "
-                              "Wait a while before running the bot again or gain "
-                              "more followers.", file=sys.stderr)
-                        return
-
-                    # don't print "already requested to follow" errors - they're
-                    # frequent
-                    if "already requested to follow" not in str(api_error).lower():
-                        print("Error: %s" % (str(api_error)), file=sys.stderr)
-
-            # when you have already favorited a tweet, this error is thrown
-            except TwitterHTTPError as api_error:
-                # quit on rate limit errors
-                if "rate limit" in str(api_error).lower():
-                    print("You have been rate limited. "
-                          "Wait a while before running the bot again.", file=sys.stderr)
-                    return
-
-                if "you have already favorited this status" not in str(api_error).lower():
-                    print("Error: %s" % (str(api_error)), file=sys.stderr)
 
     def auto_follow_followers_of_user(self, user_twitter_handle, count=100):
         """
