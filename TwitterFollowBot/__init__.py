@@ -451,3 +451,22 @@ class TwitterBot:
         """
 
         return self.TWITTER_CONNECTION.statuses.update(status=message)
+    
+    def auto_add_to_list(self, phrase, list_slug, count=100, result_type="recent"):
+        """
+            Add users to list slug that are tweeting phrase.
+        """
+        
+        result = self.search_tweets(phrase, count, result_type)
+        
+        for tweet in result["statuses"]:
+            try:
+                if tweet["user"]["screen_name"] == self.BOT_CONFIG["TWITTER_HANDLE"]:
+                    continue
+                
+                result = self.TWITTER_CONNECTION.lists.members.create(owner_screen_name=self.BOT_CONFIG["TWITTER_HANDLE"],
+                                                                      slug=list_slug,
+                                                                      screen_name=tweet["user"]["screen_name"])
+                print("User %s added to the list %s" % (tweet["user"]["screen_name"], list_slug), file=sys.stdout)
+            except TwitterHTTPError as api_error:
+                print(api_error)
