@@ -116,21 +116,21 @@ This bot has several functions for programmatically interacting with Twitter:
     from TwitterFollowBot import TwitterBot
     
     my_bot = TwitterBot()
-    my_bot.auto_follow("phrase")
+    my_bot.auto_follow_from_phrase("phrase")
     
 You can also search based on hashtags:
 
     from TwitterFollowBot import TwitterBot
     
     my_bot = TwitterBot()
-    my_bot.auto_follow("#hashtag")
+    my_bot.auto_follow_from_phrase("#hashtag")
   
 By default, the bot looks up the 100 most recent tweets. You can change this number with the `count` parameter:
 
     from TwitterFollowBot import TwitterBot
     
     my_bot = TwitterBot()
-    my_bot.auto_follow("phrase", count=1000)
+    my_bot.auto_follow_from_phrase("phrase", count=1000)
     
 ####Automatically follow any users that have followed you
 
@@ -151,14 +151,28 @@ By default, the bot looks up the 100 most recent tweets. You can change this num
     from TwitterFollowBot import TwitterBot
     
     my_bot = TwitterBot()
-    my_bot.auto_fav("phrase", count=1000)
+    my_bot.auto_fav_phrase("phrase", count=1000)
+    
+####Automatically favorite a tweet with a specific phrase, then follow that user
+
+    from TwitterFollowBot import TwitterBot
+    
+    my_bot = TwitterBot()
+    my_bot.auto_fav_phrase_then_follow("phrase", count=1000)
     
 ####Automatically retweet any tweets that have a specific phrase
 
     from TwitterFollowBot import TwitterBot
     
     my_bot = TwitterBot()
-    my_bot.auto_rt("phrase", count=1000)
+    my_bot.auto_rt_phrase("phrase", count=1000)
+
+####Automatically retweet a tweet with a specific phrase, then follow that user
+
+    from TwitterFollowBot import TwitterBot
+    
+    my_bot = TwitterBot()
+    my_bot.auto_rt_phrase_then_follow("phrase", count=1000)    
 
 ####Automatically unfollow any users that have not followed you back
 
