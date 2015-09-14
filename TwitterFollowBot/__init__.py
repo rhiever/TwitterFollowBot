@@ -245,7 +245,7 @@ class TwitterBot:
         keep_unmuted_list = []
         with open(self.BOT_CONFIG['USERS_KEEP_UNMUTED_FILE'], "r") as in_file:
             for line in in_file:
-                keep_following_list.append(int(line))
+                keep_unmuted_list.append(int(line))
 
         return set(keep_unmuted_list)
 
