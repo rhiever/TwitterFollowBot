@@ -2,6 +2,10 @@
 
 A Python bot that automates several actions on Twitter, such as following users and favoriting tweets.
 
+##Notice: Repository is no longer being maintained
+
+Twitter has started cracking down heavily on users who use bots like this one to follow users or favorite tweets en masse. For that reason, I am no longer developing this code repository but will leave it up for anyone who wants to use it as a code base for future projects. Please respect the [software license](https://github.com/rhiever/TwitterFollowBot/blob/master/LICENSE) if you use the code from this repository.
+
 ##Disclaimer
 
 I hold no liability for what you do with this bot or what happens to you by using this bot. Abusing this bot *can* get you banned from Twitter, so make sure to read up on [proper usage](https://support.twitter.com/articles/76915-automation-rules-and-best-practices) of the Twitter API.
