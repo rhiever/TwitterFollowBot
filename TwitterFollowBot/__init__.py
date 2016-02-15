@@ -409,7 +409,9 @@ class TwitterBot:
                     nonbeliever_count = nonbeliever_count + 1
                     print("%d) Unfollowed %d" % (nonbeliever_count, user_id), file=sys.stdout)
                 except TwitterHTTPError as e:
-                    print("---) Unable to unfollow %d (because: %s), ignoring..." % (user_id, e), file=sys.stdout)
+                    print("---) Unable to unfollow %d (because: %s), ignoring... \n***)Total successful unfollows so far this cycle: %d" % (user_id, e, nonbeliever_count), file=sys.stdout)
+
+        print("\n***)Total successful unfollows this cycle: %d" % (nonbeliever_count), file=sys.stdout)
 
     def auto_unfollow_all_followers(self,count=None):
         """
