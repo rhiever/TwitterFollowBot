@@ -5,6 +5,8 @@
 
 # Twitter Bot
 
+[![Join the chat at https://gitter.im/rhiever/TwitterFollowBot](https://badges.gitter.im/rhiever/TwitterFollowBot.svg)](https://gitter.im/rhiever/TwitterFollowBot?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 A Python bot that automates several actions on Twitter, such as following users and favoriting tweets.
 
 ## Notice: Repository is no longer being maintained
