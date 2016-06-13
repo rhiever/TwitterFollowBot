@@ -237,7 +237,9 @@ class TwitterBot:
                 # don't favorite your own tweets
                 if tweet["user"]["screen_name"] == self.BOT_CONFIG["TWITTER_HANDLE"]:
                     continue
-
+                
+                self.wait_on_action()
+                
                 result = self.TWITTER_CONNECTION.favorites.create(_id=tweet["id"])
                 print("Favorited: %s" % (result["text"].encode("utf-8")), file=sys.stdout)
 
@@ -264,7 +266,9 @@ class TwitterBot:
                 # don't retweet your own tweets
                 if tweet["user"]["screen_name"] == self.BOT_CONFIG["TWITTER_HANDLE"]:
                     continue
-
+                
+                self.wait_on_action()
+                
                 result = self.TWITTER_CONNECTION.statuses.retweet(id=tweet["id"])
                 print("Retweeted: %s" % (result["text"].encode("utf-8")), file=sys.stdout)
 
