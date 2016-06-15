@@ -81,12 +81,7 @@ class TwitterBot:
                 parameter = line[0].strip()
                 value = line[1].strip()
 
-                if parameter in ["USERS_KEEP_FOLLOWING", "USERS_KEEP_UNMUTED", "USERS_KEEP_MUTED"]:
-                    if value != "":
-                        self.BOT_CONFIG[parameter] = set([int(x) for x in value.split(",")])
-                    else:
-                        self.BOT_CONFIG[parameter] = set()
-                elif parameter in ["FOLLOW_BACKOFF_MIN_SECONDS", "FOLLOW_BACKOFF_MAX_SECONDS"]:
+                if parameter in ["FOLLOW_BACKOFF_MIN_SECONDS", "FOLLOW_BACKOFF_MAX_SECONDS"]:
                     self.BOT_CONFIG[parameter] = int(value)
                 else:
                     self.BOT_CONFIG[parameter] = value
@@ -218,6 +213,42 @@ class TwitterBot:
 
         return set(follows_list)
 
+    def get_keep_following_list(self):
+        """
+            Returns the set of users that you do not want to unfollow.
+        """
+
+        keep_following_list = []
+        with open(self.BOT_CONFIG['USERS_KEEP_FOLLOWING_FILE'], "r") as in_file:
+            for line in in_file:
+                keep_following_list.append(int(line))
+
+        return set(keep_following_list)
+
+    def get_keep_muted_list(self):
+        """
+            Returns the set of users that you do not want to unmute.
+        """
+
+        keep_muted_list = []
+        with open(self.BOT_CONFIG['USERS_KEEP_MUTED_FILE'], "r") as in_file:
+            for line in in_file:
+                keep_MUTED_list.append(int(line))
+
+        return set(keep_muted_list)
+
+    def get_keep_unmuted_list(self):
+        """
+            Returns the set of users that you do not want to mute.
+        """
+
+        keep_unmuted_list = []
+        with open(self.BOT_CONFIG['USERS_KEEP_UNMUTED_FILE'], "r") as in_file:
+            for line in in_file:
+                keep_unmuted_list.append(int(line))
+
+        return set(keep_unmuted_list)
+
     def search_tweets(self, phrase, count=100, result_type="recent"):
         """
             Returns a list of tweets matching a phrase (hashtag, word, etc.).
@@ -290,6 +321,7 @@ class TwitterBot:
         result = self.search_tweets(phrase, count, result_type)
         following = self.get_follows_list()
         do_not_follow = self.get_do_not_follow_list()
+        followed_num = 1
 
         for tweet in result["statuses"]:
             try:
@@ -302,8 +334,10 @@ class TwitterBot:
                     self.TWITTER_CONNECTION.friendships.create(user_id=tweet["user"]["id"], follow=False)
                     following.update(set([tweet["user"]["id"]]))
 
+                    followed_num = followed_num + 1
                     print("Followed %s" %
                           (tweet["user"]["screen_name"]), file=sys.stdout)
+                    print("Now on number " + str(followed_num) + " of " + str(count))
 
             except TwitterHTTPError as api_error:
                 # quit on rate limit errors
@@ -384,8 +418,9 @@ class TwitterBot:
 
         following = self.get_follows_list()
         followers = self.get_followers_list()
+        keep_following = self.get_keep_following_list()
 
-        not_following_back = following - followers
+        not_following_back = following - followers - keep_following
         not_following_back = list(not_following_back)[:count]
         # update the "already followed" file with users who didn't follow back
         already_followed = set(not_following_back)
@@ -401,12 +436,10 @@ class TwitterBot:
                 out_file.write(str(val) + "\n")
 
         for user_id in not_following_back:
-            if user_id not in self.BOT_CONFIG["USERS_KEEP_FOLLOWING"]:
+            self.wait_on_action()
 
-                self.wait_on_action()
-
-                self.TWITTER_CONNECTION.friendships.destroy(user_id=user_id)
-                print("Unfollowed %d" % (user_id), file=sys.stdout)
+            self.TWITTER_CONNECTION.friendships.destroy(user_id=user_id)
+            print("Unfollowed %d" % (user_id), file=sys.stdout)
 
     def auto_unfollow_all_followers(self,count=None):
         """
@@ -415,7 +448,7 @@ class TwitterBot:
         following = self.get_follows_list()
 
         for user_id in following:
-            if user_id not in self.BOT_CONFIG["USERS_KEEP_FOLLOWING"]:
+            if user_id not in self.get_keep_following_list():
 
                 self.wait_on_action()
 
@@ -428,12 +461,13 @@ class TwitterBot:
         """
 
         following = self.get_follows_list()
+
         muted = set(self.TWITTER_CONNECTION.mutes.users.ids(screen_name=self.BOT_CONFIG["TWITTER_HANDLE"])["ids"])
 
         not_muted = following - muted
 
         for user_id in not_muted:
-            if user_id not in self.BOT_CONFIG["USERS_KEEP_UNMUTED"]:
+            if user_id not in self.get_keep_unmuted_list():
                 self.TWITTER_CONNECTION.mutes.users.create(user_id=user_id)
                 print("Muted %d" % (user_id), file=sys.stdout)
 
@@ -445,7 +479,7 @@ class TwitterBot:
         muted = set(self.TWITTER_CONNECTION.mutes.users.ids(screen_name=self.BOT_CONFIG["TWITTER_HANDLE"])["ids"])
 
         for user_id in muted:
-            if user_id not in self.BOT_CONFIG["USERS_KEEP_MUTED"]:
+            if user_id not in self.get_keep_muted_list():
                 self.TWITTER_CONNECTION.mutes.users.destroy(user_id=user_id)
                 print("Unmuted %d" % (user_id), file=sys.stdout)
 
@@ -455,7 +489,7 @@ class TwitterBot:
         """
 
         return self.TWITTER_CONNECTION.statuses.update(status=message)
-    
+
     def auto_add_to_list(self, phrase, list_slug, count=100, result_type="recent"):
         """
             Add users to list slug that are tweeting phrase.
@@ -474,3 +508,4 @@ class TwitterBot:
                 print("User %s added to the list %s" % (tweet["user"]["screen_name"], list_slug), file=sys.stdout)
             except TwitterHTTPError as api_error:
                 print(api_error)
+
