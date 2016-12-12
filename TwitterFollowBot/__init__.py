@@ -214,7 +214,10 @@ class TwitterBot:
         follows_list = []
         with open(self.BOT_CONFIG["FOLLOWS_FILE"], "r") as in_file:
             for line in in_file:
-                follows_list.append(int(line))
+                try:
+                    follows_list.append(int(line))
+                except ValueError as e:
+                    print("Ignoring invalid user ID: %s" % (line))
 
         return set(follows_list)
 
@@ -400,13 +403,17 @@ class TwitterBot:
             for val in already_followed:
                 out_file.write(str(val) + "\n")
 
+        nonbeliever_count = 0
         for user_id in not_following_back:
             if user_id not in self.BOT_CONFIG["USERS_KEEP_FOLLOWING"]:
 
                 self.wait_on_action()
-
-                self.TWITTER_CONNECTION.friendships.destroy(user_id=user_id)
-                print("Unfollowed %d" % (user_id), file=sys.stdout)
+                try:
+                    self.TWITTER_CONNECTION.friendships.destroy(user_id=user_id)
+                    nonbeliever_count = nonbeliever_count + 1
+                    print("%d) Unfollowed %d" % (nonbeliever_count, user_id), file=sys.stdout)
+                except TwitterHTTPError as e:
+                    print("---) Unable to unfollow %d (because: %s), ignoring..." % (user_id, e), file=sys.stdout)
 
     def auto_unfollow_all_followers(self,count=None):
         """
