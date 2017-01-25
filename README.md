@@ -63,7 +63,7 @@ Before running the bot, you must first set it up so it can connect to the Twitte
 
 `OAUTH_TOKEN`, `OAUTH_SECRET`, `CONSUMER_KEY`, `CONSUMER_SECRET` are your API keys that you received from creating your app account. `TWITTER_HANDLE` is your Twitter name, case-sensitive.
 
-`USERS_TO_FOLLOW_FILE` is a file with one username per line of users thant you want to follow.
+`USERS_TO_FOLLOW_FILE` is a file with usernames that you want to follow.
 
 You can change the `FILE` entries if you want to store that information in a specific location on your computer. By default, the files will be created in your current directory.
 
@@ -160,7 +160,7 @@ By default, the bot looks up the 100 most recent tweets. You can change this num
     my_bot = TwitterBot()
     my_bot.auto_follow_followers_of_user("jack", count=1000)
 
-#### Automatically follow users from the user to follow list
+#### Automatically follow users from a username list
 
     from TwitterFollowBot import TwitterBot
 
