@@ -218,6 +218,18 @@ class TwitterBot:
 
         return set(follows_list)
 
+    def get_users_to_follow_list(self):
+        """
+            Return a list of users to follow.
+        """
+
+        users_to_follow_list = []
+        with open(self.BOT_CONFIG["USERS_TO_FOLLOW_FILE"], "r") as in_file:
+            for line in in_file:
+                users_to_follow_list.append(line.strip())
+
+        return set(users_to_follow_list)
+
     def search_tweets(self, phrase, count=100, result_type="recent"):
         """
             Returns a list of tweets matching a phrase (hashtag, word, etc.).
@@ -237,9 +249,9 @@ class TwitterBot:
                 # don't favorite your own tweets
                 if tweet["user"]["screen_name"] == self.BOT_CONFIG["TWITTER_HANDLE"]:
                     continue
-                
+
                 self.wait_on_action()
-                
+
                 result = self.TWITTER_CONNECTION.favorites.create(_id=tweet["id"])
                 print("Favorited: %s" % (result["text"].encode("utf-8")), file=sys.stdout)
 
@@ -266,9 +278,9 @@ class TwitterBot:
                 # don't retweet your own tweets
                 if tweet["user"]["screen_name"] == self.BOT_CONFIG["TWITTER_HANDLE"]:
                     continue
-                
+
                 self.wait_on_action()
-                
+
                 result = self.TWITTER_CONNECTION.statuses.retweet(id=tweet["id"])
                 print("Retweeted: %s" % (result["text"].encode("utf-8")), file=sys.stdout)
 
@@ -377,6 +389,34 @@ class TwitterBot:
                 if "already requested to follow" not in str(api_error).lower():
                     print("Error: %s" % (str(api_error)), file=sys.stderr)
 
+    def follow_from_list(self, count=None):
+        """
+            Follow followers from a list.
+        """
+
+        users_to_follow = self.get_users_to_follow_list()
+
+        for username in users_to_follow:
+            try:
+                self.wait_on_action()
+
+                self.TWITTER_CONNECTION.friendships.create(screen_name=username, follow=False)
+                print("Followed %s" % username, file=sys.stdout)
+
+            except TwitterHTTPError as api_error:
+                # quit on rate limit errors
+                if "unable to follow more people at this time" in str(api_error).lower():
+                    print("You are unable to follow more people at this time. "
+                          "Wait a while before running the bot again or gain "
+                          "more followers.", file=sys.stderr)
+                    return
+
+                # don't print "already requested to follow" errors - they're
+                # frequent
+                if "already requested to follow" not in str(api_error).lower():
+                    print("Error: %s" % (str(api_error)), file=sys.stderr)
+
+
     def auto_unfollow_nonfollowers(self,count=None):
         """
             Unfollows everyone who hasn't followed you back.
@@ -455,19 +495,19 @@ class TwitterBot:
         """
 
         return self.TWITTER_CONNECTION.statuses.update(status=message)
-    
+
     def auto_add_to_list(self, phrase, list_slug, count=100, result_type="recent"):
         """
             Add users to list slug that are tweeting phrase.
         """
-        
+
         result = self.search_tweets(phrase, count, result_type)
-        
+
         for tweet in result["statuses"]:
             try:
                 if tweet["user"]["screen_name"] == self.BOT_CONFIG["TWITTER_HANDLE"]:
                     continue
-                
+
                 result = self.TWITTER_CONNECTION.lists.members.create(owner_screen_name=self.BOT_CONFIG["TWITTER_HANDLE"],
                                                                       slug=list_slug,
                                                                       screen_name=tweet["user"]["screen_name"])
