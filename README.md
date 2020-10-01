@@ -3,7 +3,7 @@
 ![Python 3.5](https://img.shields.io/badge/python-3.5-blue.svg)
 ![License](https://img.shields.io/badge/license-GPLv3-blue.svg)
 
-# Twitter Bot
+# Best Twitter Bot
 
 [![Join the chat at https://gitter.im/rhiever/TwitterFollowBot](https://badges.gitter.im/rhiever/TwitterFollowBot.svg)](https://gitter.im/rhiever/TwitterFollowBot?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
