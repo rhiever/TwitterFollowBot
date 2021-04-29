@@ -1,0 +1,30 @@
+version: 2
+updates:
+- package-ecosystem: pip
+  directory: "/"
+  schedule:
+    interval: daily
+    time: "22:00"
+  open-pull-requests-limit: 10
+  ignore:
+  - dependency-name: flake8
+    versions:
+    - 3.8.4
+    - 3.9.0
+  - dependency-name: pyflakes
+    versions:
+    - 2.2.0
+    - 2.3.0
+  - dependency-name: ipdb
+    versions:
+    - 0.13.4
+    - 0.13.5
+    - 0.13.6
+  - dependency-name: ipython
+    versions:
+    - 7.19.0
+    - 7.20.0
+    - 7.21.0
+  - dependency-name: isort
+    versions:
+    - 5.7.0
