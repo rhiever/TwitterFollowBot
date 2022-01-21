@@ -1,4 +1,4 @@
-ipython==2.0.0
+ipython==7.16.3
 ipdb==0.8
 dbgp==1.1
 vim-debug==1.5.4
