@@ -1,1 +1,1 @@
-twitter==1.17.0
+twitter==1.19.6
