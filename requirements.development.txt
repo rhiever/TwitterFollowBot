@@ -4,5 +4,5 @@ dbgp==1.1
 vim-debug==1.5.4
 pep8==1.7.1
 flake8==5.0.4
-pyflakes==0.8.1
+pyflakes==2.5.0
 isort==5.10.1
